@@ -4,6 +4,38 @@ main:
     url: /categories/
   - title: "Tag"
     url: /tags/
+
+docs:
+  - title: "Languages"
+    children:
+      - title: "Python"
+        url: /categories/python/
+      - title: "Java"
+        url: /categories/java/
+      - title: "C&C++"
+        url: /categories/cpp/
+      - title: "SQL"
+        url: /categories/sql/
+  - title: "DS/AL"
+    children:
+      - title: "Data Structures"
+        url: /categories/ds/
+      - title: "Algorithms"
+        url: /categories/algorithms/
+  - title: "Computer"
+    children:
+      - title: "Operating System"
+        url: /categories/os/
+      - title: "Computer Structure"
+        url: /categories/cs/
+  - title: "PS"
+    children:
+      - title: "BOJ"
+        url: /categories/boj/
+      - /title: "LeetCode"
+        url: /categories/leetcode/
+
+  
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"

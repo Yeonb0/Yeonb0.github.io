@@ -1,12 +1,10 @@
 ---
 layout: single
-title: "Test"
+title: C Chap1
+categories: cpp
+tag: c
+sidebar:
+  nav: "docs"
 ---
 
-# Test하기
-
-: >
-
-안되는디요? 어랍쇼
-
-아 아예 Commit 이 안되서 그런가바
+# 첫 포스팅
