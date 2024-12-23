@@ -51,13 +51,19 @@
   text-overflow: ellipsis;
 
   a[rel="permalink"]::before {
+    color: $text-color;
     content: '';
     position: absolute;
     inset: 0;
   }
 
+  a {
+    text-decoration: none; // 밑줄 제거
+  }
+
   a + a {
-    opacity: 0.5;
+    color: #e1caf3;
+    transition: 0.3s;
   }
 }
 
