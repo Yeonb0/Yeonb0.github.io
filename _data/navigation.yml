@@ -12,12 +12,28 @@ docs:
   - title: "Languages"
     children:
       - title: "C/C++"
-        url: /C&C++/
-  - title: "Tools"
+        image: "/assets/images/c_icon.png"
+        url: /categories/#c-cpp
+  - title: "DS/Algo"
     children:
-      - title: "Git Blog"
-        url: /gitblog/
-
+      - title: "🗄️ Data Structures"
+        url: /categories/#data-structure
+      - title: "🏁 Algorithms"
+        url: /categories/#algorithm
+  - title: "BOJ"
+    children:
+      - title: "🟫 Bronze"
+        url: /categories/boj/#bronze
+      - title: "⬜ Silver"
+        url: /categories/boj/#silver
+      - title: "🟨 Gold"
+        url: /categories/boj/#gold
+      - title: "🟩 Platinum"
+        url: /categories/boj/#platinum
+      - title: "🟦 Diamond"
+        url: /categories/boj/#diamond
+      - title: "🟥 Ruby"
+        url: /categories/boj/#ruby
   
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
