@@ -417,12 +417,12 @@
     }
 
     ul {
-      margin-bottom: 1em;
+      margin-bottom: 1.5em;
+  
     }
 
     a {
       display: block;
-      padding: 0.25em 0;
 
       @include breakpoint($large) {
         padding-top: 0.125em;
@@ -437,7 +437,7 @@
 }
 
 .nav__list .nav__items {
-  margin: 0;
+  margin: 5px;
   font-size: 1.25rem;
 
   a {
@@ -479,12 +479,19 @@
 }
 
 .nav__title {
-  margin: 0;
-  padding: 0.5rem 0.75rem;
+  margin: 0px;
+  padding: 0.2rem 0.5rem;
   font-family: $sans-serif-narrow;
   font-size: $type-size-5;
   font-weight: bold;
+  border-bottom: 1px solid $border-color;
+  text-align: center;
+  &:hover {
+    border-bottom: 3px solid $border-color; 
+  }
+  transition: border-bottom 0.3s ease-in-out; /* 애니메이션 추가 */
 }
+
 
 .nav__sub-title {
   display: block;
@@ -495,6 +502,20 @@
   font-weight: bold;
   text-transform: uppercase;
   border-bottom: 1px solid $border-color;
+}
+
+.nav__items i {
+  margin-right: 8px;
+  font-size: $type-size-6;
+  color: #caaadf;
+  
+  &:hover {
+    color: $primary-color;
+  }
+}
+
+.nav__list li {
+  margin: 6px;
 }
 
 /*
@@ -544,7 +565,7 @@
     border-bottom: 1px solid $border-color;
 
     &:hover {
-      color: $text-color;
+      color: $primary-color;
     }
   }
 

@@ -12,27 +12,35 @@ docs:
   - title: "Languages"
     children:
       - title: "C/C++"
-        image: "/assets/images/c_icon.png"
+        icon: "fa-solid fa-c"
         url: /categories/#c-cpp
   - title: "DS/Algo"
     children:
-      - title: "🗄️ Data Structures"
+      - title: "Data Structures"
+        icon: "fa-solid fa-database"
         url: /categories/#data-structure
-      - title: "🏁 Algorithms"
+      - title: "Algorithms"
+        icon: "fa-solid fa-chart-diagram"
         url: /categories/#algorithm
   - title: "BOJ"
     children:
-      - title: "🟫 Bronze"
+      - title: "Bronze"
+        icon: "fa-solid fa-b"
         url: /categories/boj/#bronze
-      - title: "⬜ Silver"
+      - title: "Silver"
+        icon: "fa-solid fa-s"
         url: /categories/boj/#silver
-      - title: "🟨 Gold"
+      - title: "Gold"
+        icon: "fa-solid fa-g"
         url: /categories/boj/#gold
-      - title: "🟩 Platinum"
+      - title: "Platinum"
+        icon: "fa-solid fa-p"
         url: /categories/boj/#platinum
-      - title: "🟦 Diamond"
+      - title: "Diamond"
+        icon: "fa-solid fa-d"
         url: /categories/boj/#diamond
-      - title: "🟥 Ruby"
+      - title: "Ruby"
+        icon: "fa-solid fa-r"
         url: /categories/boj/#ruby
   
   # - title: "About"
