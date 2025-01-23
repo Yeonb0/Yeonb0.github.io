@@ -25,7 +25,7 @@ description              : "Programming Something"
 url                      : "https://Yeonb0ra.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "Yeonb0/Yeonb0.github.io"
-teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
+teaser                   : "/assets/images/연보라.png"
 logo                     : "/assets/images/연보라.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 breadcrumbs              : true # true, false (default)

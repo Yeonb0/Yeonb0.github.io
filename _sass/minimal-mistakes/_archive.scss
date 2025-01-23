@@ -57,6 +57,10 @@
     inset: 0;
   }
 
+  a[rel="permalink"]:hover {
+    color: white;
+  }
+
   a {
     text-decoration: none; // 밑줄 제거
   }
