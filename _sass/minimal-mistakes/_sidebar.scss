@@ -126,6 +126,11 @@
 /*
    Author profile and links
    ========================================================================== */
+.h-card {
+  padding-left: 10px;
+  background-color: $border-color;
+  border-radius: 3.8%;
+}
 
 .author__avatar {
   display: table-cell;
@@ -140,7 +145,7 @@
   }
 
   img {
-    max-width: 110px;
+    max-width: 160px;
     border-radius: 50%;
 
     @include breakpoint($large) {

@@ -20,7 +20,7 @@ rtl                      : # true, false (default) # turns direction of the page
 title                    : "Bora.log"
 title_separator          : "-"
 subtitle                 : "(๑•̀ㅂ•́)و✧"
-name                     : "연보라"
+name                     : "연보라 🌟"
 description              : "Programming Something"
 url                      : "https://Yeonb0ra.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
@@ -303,6 +303,7 @@ defaults:
       toc_label: "Contents"
       sidebar:
         nav: "docs"
+      sidebar_main: true
   - scope:
       path: ""
       type: pages

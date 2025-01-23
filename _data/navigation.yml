@@ -14,6 +14,12 @@ docs:
       - title: "C/C++"
         icon: "fa-solid fa-c"
         url: /categories/#c-cpp
+      - title: "Python"
+        icon: "fa-brands fa-python"
+        url: /categories/#python
+      - title: "Java"
+        icon: "fa-brands fa-java"
+        url: /categories/#java
   - title: "DS/Algo"
     children:
       - title: "Data Structures"

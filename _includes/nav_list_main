@@ -1,0 +1,101 @@
+<!-- https://ansohxxn.github.io/blog/category/#%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC-%ED%8E%98%EC%9D%B4%EC%A7%80 참고 -->
+<!--전체 글 수를 세기 위한 연산. sum 변수에 전체 글 수 저장-->
+
+{% assign sum = site.posts | size %}
+
+<nav class="nav__list">
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label }}</label>
+  <ul class="nav__items" id="category_tag_menu">
+      <!--전체 글 수-->
+      <li>
+            📂 <span style="font-family:'Cafe24Oneprettynight';">전체 글 수</style> <span style="font-family:'Coming Soon';">{{sum}}</style> <span style="font-family:'Cafe24Oneprettynight';">개</style> 
+      </li>
+      <li>
+        <!--span 태그로 카테고리들을 크게 분류 ex) C/C++/C#-->
+        <span class="nav__sub-title">Language</span>
+            <!--ul 태그로 같은 카테고리들 모아둔 페이지들 나열-->
+            <ul>
+                <!--Cpp 카테고리 글들을 모아둔 페이지인 /categories/cpp 주소의 글로 링크 연결-->
+                <!--category[1].size 로 해당 카테고리를 가진 글의 개수 표시--> 
+                {% for category in site.categories %}
+                    {% if category[0] == "C/C++" %}
+                        <li><i class="fa-solid fa-c" style="color: $toc-color;"></i><a href="/categories/c-cpp" class="">C++ ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Python" %}
+                        <li><i class="fa-brands fa-python" style="color: $toc-color;"></i><a href="/categories/python" class="">Python ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Java" %}
+                        <li><i class="fa-brands fa-java" style="color: $toc-color;"></i><a href="/categories/java" class="">Java ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        <span class="nav__sub-title">Basic Coding</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Data-Structure" %}
+                        <li><i class="fa-solid fa-database" style="color: $toc-color;"></i><a href="/categories/data-structure" class="">DS ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Algorithm" %}
+                        <li><i class="fa-solid fa-chart-diagram" style="color: $toc-color;"></i><a href="/categories/algorithm" class="">Algorithm ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        <span class="nav__sub-title">BOJ</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Bronze" %}
+                        <li><i class="fa-solid fa-gem" style="color: rgb(153, 108, 83);"></i><a href="/categories/bronze" class="">Bronze ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Silver" %}
+                        <li><i class="fa-solid fa-gem" style="color: rgb(220, 220, 220);"></i><a href="/categories/silver" class="">Silver ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Gold" %}
+                        <li><i class="fa-solid fa-gem" style="color: rgb(255, 238, 139);"></i><a href="/categories/gold" class="">Gold ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Platinum" %}
+                        <li><i class="fa-solid fa-gem" style="color: rgb(169, 255, 176);"></i><a href="/categories/platinum" class="">Platinum ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Diamond" %}
+                        <li><i class="fa-solid fa-d" style="color: rgb(155, 230, 255);"></i><a href="/categories/diamond" class="">Diamond ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Ruby" %}
+                        <li><i class="fa-solid fa-gem" style="color: rgb(255, 143, 143);"></i><a href="/categories/ruby" class="">Ruby ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+  </ul>
+</nav>
