@@ -10,6 +10,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
 
     - uses: actions/setup-python@v5
       with:
@@ -31,7 +33,7 @@ jobs:
       env:
         BLOG_TOKEN: ${{ secrets.BLOG_TOKEN }}
       run: |
-        git clone https://$BLOG_TOKEN@github.com/Yeonb0/Yeonb0.github.io.git blog
+        git clone https://Yeonb0:$BLOG_TOKEN@github.com/Yeonb0/Yeonb0.github.io.git blog
         cp generated/*.md blog/_posts/ || true
         cd blog
         git config user.name "github-actions"
