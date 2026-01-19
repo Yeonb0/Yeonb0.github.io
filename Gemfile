@@ -6,3 +6,6 @@ gem 'tzinfo-data'
 gem 'csv'
 gem 'base64'
 
+gem "github-pages", group: :jekyll_plugins
+gem "jekyll"
+

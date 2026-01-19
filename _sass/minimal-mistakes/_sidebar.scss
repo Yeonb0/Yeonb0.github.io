@@ -357,3 +357,12 @@
     margin-inline-end: initial;
   }
 }
+/* ================================
+   Minimal Mistakes Sidebar Scrollbar
+   숨김 → hover 시 표시
+================================ */
+
+/* 기본: 스크롤 가능하지만 스크롤바 숨김 */
+.sidebar {
+  scrollbar-width: none;      /* Firefox */
+}
