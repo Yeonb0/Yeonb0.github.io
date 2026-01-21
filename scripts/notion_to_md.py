@@ -11,10 +11,10 @@ NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 DATABASE_ID = os.environ["NOTION_DB_ID"]
 
 POSTS_DIR = "_posts"
-IMAGE_DIR = "assets/images/notion"
+IMAGE_BASE_DIR = "assets/images/notion"
 
 os.makedirs(POSTS_DIR, exist_ok=True)
-os.makedirs(IMAGE_DIR, exist_ok=True)
+os.makedirs(IMAGE_BASE_DIR, exist_ok=True)
 
 notion = Client(auth=NOTION_TOKEN)
 
@@ -22,61 +22,124 @@ notion = Client(auth=NOTION_TOKEN)
 # 유틸
 # ==================================================
 def slugify(text: str) -> str:
-  return text.strip().replace(" ", "-").lower()
+  return (
+    text.strip()
+    .lower()
+    .replace(" ", "-")
+    .replace("/", "-")
+  )
 
 # ==================================================
-# 이미지 다운로드
+# 이미지 다운로드 (글별 폴더)
 # ==================================================
-def download_image(url, name):
-  ext = url.split("?")[0].split(".")[-1]
-  filename = f"{name}.{ext}"
-  path = os.path.join(IMAGE_DIR, filename)
+def download_image(url, post_slug, image_name):
+  headers = {
+    "User-Agent": "Mozilla/5.0 (GitHub Actions Notion Sync)",
+    "Accept": "*/*"
+  }
 
-  if not os.path.exists(path):
-    r = requests.get(url)
+  try:
+    r = requests.get(url, headers=headers, timeout=10)
     r.raise_for_status()
-    with open(path, "wb") as f:
-      f.write(r.content)
+  except Exception:
+    print(f"[WARN] Image download failed: {url}")
+    return None
 
-  return f"/{IMAGE_DIR}/{filename}"
+  content_type = r.headers.get("Content-Type", "")
+  ext = "png"
+
+  if "jpeg" in content_type or "jpg" in content_type:
+    ext = "jpg"
+  elif "png" in content_type:
+    ext = "png"
+  elif "gif" in content_type:
+    ext = "gif"
+
+  post_image_dir = os.path.join(IMAGE_BASE_DIR, post_slug)
+  os.makedirs(post_image_dir, exist_ok=True)
+
+  filename = f"{image_name}.{ext}"
+  path = os.path.join(post_image_dir, filename)
+
+  with open(path, "wb") as f:
+    f.write(r.content)
+
+  return f"/{IMAGE_BASE_DIR}/{post_slug}/{filename}"
+
+# ==================================================
+# Notion 블록 페이지네이션 (🔥 글 안 짤림)
+# ==================================================
+def get_all_blocks(block_id):
+  blocks = []
+  cursor = None
+
+  while True:
+    response = notion.blocks.children.list(
+      block_id=block_id,
+      start_cursor=cursor
+    )
+
+    blocks.extend(response["results"])
+
+    if not response["has_more"]:
+      break
+
+    cursor = response["next_cursor"]
+
+  return blocks
 
 # ==================================================
 # 블록 → Markdown
 # ==================================================
-def block_to_md(block, page_id):
+def block_to_md(block, page_id, post_slug, img_index):
   t = block["type"]
 
   if t == "paragraph":
     text = "".join(x["plain_text"] for x in block[t]["rich_text"])
-    return text + "\n\n"
+    return text + "\n\n", img_index
 
   if t == "heading_1":
-    return "# " + block[t]["rich_text"][0]["plain_text"] + "\n\n"
+    return "# " + block[t]["rich_text"][0]["plain_text"] + "\n\n", img_index
 
   if t == "heading_2":
-    return "## " + block[t]["rich_text"][0]["plain_text"] + "\n\n"
+    return "## " + block[t]["rich_text"][0]["plain_text"] + "\n\n", img_index
 
   if t == "heading_3":
-    return "### " + block[t]["rich_text"][0]["plain_text"] + "\n\n"
+    return "### " + block[t]["rich_text"][0]["plain_text"] + "\n\n", img_index
 
   if t == "code":
     lang = block[t]["language"]
     code = block[t]["rich_text"][0]["plain_text"]
-    return f"```{lang}\n{code}\n```\n\n"
-
-  if t == "image":
-    img = block[t]["image"]
-    url = img["file"]["url"] if img["type"] == "file" else img["external"]["url"]
-    img_path = download_image(url, f"{page_id}_{block['id']}")
-    return f"![]({img_path})\n\n"
+    return f"```{lang}\n{code}\n```\n\n", img_index
 
   if t == "bulleted_list_item":
-    return "- " + block[t]["rich_text"][0]["plain_text"] + "\n"
+    return "- " + block[t]["rich_text"][0]["plain_text"] + "\n", img_index
 
   if t == "numbered_list_item":
-    return "1. " + block[t]["rich_text"][0]["plain_text"] + "\n"
+    return "1. " + block[t]["rich_text"][0]["plain_text"] + "\n", img_index
 
-  return ""
+  if t == "image":
+    img = block["image"]
+
+    # Notion 내부 이미지 → 글별 폴더에 저장
+    if img["type"] == "file":
+      url = img["file"]["url"]
+      img_path = download_image(
+        url,
+        post_slug,
+        f"img_{img_index}"
+      )
+      img_index += 1
+
+      if img_path:
+        return f"![]({img_path})\n\n", img_index
+      return "", img_index
+
+    # 외부 이미지 → URL 그대로
+    if img["type"] == "external":
+      return f"![]({img['external']['url']})\n\n", img_index
+
+  return "", img_index
 
 # ==================================================
 # 상태 → 완료
@@ -94,31 +157,28 @@ def update_status_done(page_id):
   )
 
 # ==================================================
-# 페이지 처리 (🔥 핵심)
+# 페이지 처리
 # ==================================================
 def process_page(page):
   props = page["properties"]
 
   # ----------------------
-  # 상태 안전 처리 (Select + Status)
+  # 상태 처리 (Select / Status)
   # ----------------------
   status_prop = props.get("상태")
-  if not status_prop:
-    return
-
   status_value = None
 
-  if status_prop["type"] == "select" and status_prop["select"]:
-    status_value = status_prop["select"]["name"]
+  if status_prop:
+    if status_prop["type"] == "select" and status_prop["select"]:
+      status_value = status_prop["select"]["name"]
+    elif status_prop["type"] == "status" and status_prop["status"]:
+      status_value = status_prop["status"]["name"]
 
-  elif status_prop["type"] == "status" and status_prop["status"]:
-    status_value = status_prop["status"]["name"]
-
-  if status_value != "진행중":
+  if not status_value or status_value == "완료":
     return
 
   # ----------------------
-  # 필수 필드 체크
+  # 필수 필드
   # ----------------------
   if not props["이름"]["title"]:
     return
@@ -135,14 +195,16 @@ def process_page(page):
   date_obj = datetime.fromisoformat(date_str)
   date_prefix = date_obj.strftime("%Y-%m-%d")
 
+  post_slug = slugify(title)
+  category_slug = slugify(category)
+
   # ----------------------
   # 카테고리 폴더
   # ----------------------
-  safe_category = slugify(category)
-  category_dir = os.path.join(POSTS_DIR, safe_category)
+  category_dir = os.path.join(POSTS_DIR, category_slug)
   os.makedirs(category_dir, exist_ok=True)
 
-  filename = f"{date_prefix}-{slugify(title)}.md"
+  filename = f"{date_prefix}-{post_slug}.md"
   file_path = os.path.join(category_dir, filename)
 
   # ----------------------
@@ -162,11 +224,14 @@ def process_page(page):
   content += "---\n\n"
 
   # ----------------------
-  # 본문
+  # 본문 (페이지네이션 + 이미지 분리)
   # ----------------------
-  blocks = notion.blocks.children.list(page["id"])["results"]
+  blocks = get_all_blocks(page["id"])
+  img_index = 1
+
   for block in blocks:
-    content += block_to_md(block, page["id"])
+    md, img_index = block_to_md(block, page["id"], post_slug, img_index)
+    content += md
 
   # ----------------------
   # 파일 생성 + 상태 변경
@@ -176,7 +241,7 @@ def process_page(page):
       f.write(content)
 
     update_status_done(page["id"])
-    print(f"✔ Uploaded: {safe_category}/{filename}")
+    print(f"✔ Uploaded: {category_slug}/{filename}")
 
   except Exception as e:
     print(f"❌ Failed: {title}")
