@@ -24,10 +24,15 @@ docs:
     children:
       - title: "Data Structures"
         icon: "fa-solid fa-database"
-        url: /categories/data-structure/
+        url: /categories/#data-structure
       - title: "Algorithms"
         icon: "fa-solid fa-chart-diagram"
         url: /categories/#algorithm
+  - title: "Computer Systems"
+    children:
+      - title: "OS"
+        icon: "fa-brands fa-windows"
+        url: /categories/#operation-system
   - title: "BOJ"
     children:
       - title: "Bronze"
