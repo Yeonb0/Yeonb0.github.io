@@ -79,9 +79,20 @@ body {
 }
 
 .page__title-divider {
-  margin: 1rem 0 0;
+  margin: 0.75rem 0 1rem;
   border: 0;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid rgba($text-color, 0.35);
+}
+
+.page__inner-wrap > header {
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba($text-color, 0.35);
+}
+
+.page__hero--overlay .wrapper {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(#fff, 0.5);
 }
 
 .page__lead {

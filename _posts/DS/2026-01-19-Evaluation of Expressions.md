@@ -8,10 +8,6 @@ tag: [DS, 자료구조]
 
 
 
-# 3.6 Evaluation of Expressions
-
----
-
 ## 3.6.1 Expressions
 
 - token 요소

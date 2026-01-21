@@ -8,10 +8,6 @@ tag: [DS, 자료구조, 스택, 큐]
 
 
 
-# Stack & Queue
-
----
-
 ordered list(순차 리스트)의 특수한 형태
 
 # 1. Stack
@@ -305,7 +301,7 @@ void addq(element item){ // 원형 큐에 item 추가
 ```
 
 - [Program 3.10] : Doubling queue capacity
-    
+  
     - 
       
         ```c

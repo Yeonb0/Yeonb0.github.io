@@ -8,8 +8,6 @@ tag: [DS, 자료구조, 행렬, 희소 행렬]
 
 
 
-# Sparse Matrix
-
 ## ADT
 
 - 희소 행렬 : 0이 많은 행렬

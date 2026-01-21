@@ -16,8 +16,8 @@ $paragraph-indent: false !default; // true, false (default)
 $indent-var: 1.3em !default;
 
 /* system typefaces */
-$serif: 'NanumSquareNeoVariable', 'NanumSquareNeo', "Nanum Gothic", Georgia, Times, serif !default;
-$sans-serif: 'NanumSquareNeoVariable', 'NanumSquareNeo', "Nanum Gothic", -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI",
+$serif: "NanumSquare", "Nanum Gothic", Georgia, Times, serif !default;
+$sans-serif: "NanumSquare", "Nanum Gothic", -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI",
   "Helvetica Neue", "Lucida Grande", Arial, sans-serif !default;
 $monospace: "D2Coding", Monaco, Consolas, "Lucida Console", monospace !default;
 
