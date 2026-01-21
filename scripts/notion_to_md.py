@@ -19,9 +19,9 @@ os.makedirs(IMAGE_DIR, exist_ok=True)
 notion = Client(auth=NOTION_TOKEN)
 
 # ==================================================
-# 유틸 함수
+# 유틸
 # ==================================================
-def slugify(text):
+def slugify(text: str) -> str:
   return text.strip().replace(" ", "-").lower()
 
 # ==================================================
@@ -41,7 +41,7 @@ def download_image(url, name):
   return f"/{IMAGE_DIR}/{filename}"
 
 # ==================================================
-# Notion 블록 → Markdown
+# 블록 → Markdown
 # ==================================================
 def block_to_md(block, page_id):
   t = block["type"]
@@ -79,7 +79,7 @@ def block_to_md(block, page_id):
   return ""
 
 # ==================================================
-# 상태를 "완료"로 변경
+# 상태 → 완료
 # ==================================================
 def update_status_done(page_id):
   notion.pages.update(
@@ -94,13 +94,37 @@ def update_status_done(page_id):
   )
 
 # ==================================================
-# 페이지 처리
+# 페이지 처리 (🔥 핵심)
 # ==================================================
 def process_page(page):
   props = page["properties"]
 
-  status = props["상태"]["select"]["name"]
-  if status != "진행중":
+  # ----------------------
+  # 상태 안전 처리 (Select + Status)
+  # ----------------------
+  status_prop = props.get("상태")
+  if not status_prop:
+    return
+
+  status_value = None
+
+  if status_prop["type"] == "select" and status_prop["select"]:
+    status_value = status_prop["select"]["name"]
+
+  elif status_prop["type"] == "status" and status_prop["status"]:
+    status_value = status_prop["status"]["name"]
+
+  if status_value != "진행중":
+    return
+
+  # ----------------------
+  # 필수 필드 체크
+  # ----------------------
+  if not props["이름"]["title"]:
+    return
+  if not props["작성일"]["date"]:
+    return
+  if not props["카테고리"]["select"]:
     return
 
   title = props["이름"]["title"][0]["plain_text"]
@@ -111,6 +135,9 @@ def process_page(page):
   date_obj = datetime.fromisoformat(date_str)
   date_prefix = date_obj.strftime("%Y-%m-%d")
 
+  # ----------------------
+  # 카테고리 폴더
+  # ----------------------
   safe_category = slugify(category)
   category_dir = os.path.join(POSTS_DIR, safe_category)
   os.makedirs(category_dir, exist_ok=True)
@@ -149,14 +176,14 @@ def process_page(page):
       f.write(content)
 
     update_status_done(page["id"])
-    print(f"✔ Uploaded: {category}/{filename}")
+    print(f"✔ Uploaded: {safe_category}/{filename}")
 
   except Exception as e:
     print(f"❌ Failed: {title}")
     print(e)
 
 # ==================================================
-# DB 조회
+# 메인
 # ==================================================
 def main():
   pages = notion.databases.query(database_id=DATABASE_ID)["results"]
