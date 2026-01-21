@@ -110,6 +110,91 @@
   }
 }
 
+/*
+   Collapsible TOC for posts
+   - Hide TOC off-canvas to the right for more reading space
+   - Reveal when hovering near the right edge
+   ========================================================================== */
+.page--toc-collapsible {
+  position: relative;
+
+  @include breakpoint($large) {
+    width: 100%;
+    padding-inline-end: 0;
+  }
+
+  @include breakpoint($x-large) {
+    width: 100%;
+    padding-inline-end: 0;
+  }
+
+  &::after {
+    @include breakpoint($large) {
+      content: "";
+      position: fixed;
+      top: 0;
+      inset-inline-end: 0;
+      width: 24px;
+      height: 100%;
+      z-index: 15;
+    }
+  }
+
+  .sidebar__right {
+    @include breakpoint($large) {
+      position: fixed;
+      top: 6.5rem;
+      inset-inline-end: 0;
+      margin-inline-end: 0;
+      width: $right-sidebar-width-narrow;
+      padding-inline-start: 0;
+      transform: translateX(calc(100% - 12px));
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
+    }
+
+    @include breakpoint($x-large) {
+      width: $right-sidebar-width;
+    }
+
+    &:hover {
+      @include breakpoint($large) {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    &::before {
+      @include breakpoint($large) {
+        content: "";
+        position: absolute;
+        top: 0;
+        inset-inline-start: -18px;
+        width: 18px;
+        height: 100%;
+      }
+    }
+
+    .toc {
+      @include breakpoint($large) {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  &:hover .sidebar__right {
+    @include breakpoint($large) {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+}
+
 .splash .sidebar__right {
   @include breakpoint($large) {
     position: relative;

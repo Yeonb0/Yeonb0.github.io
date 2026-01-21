@@ -24,7 +24,7 @@ docs:
     children:
       - title: "Data Structures"
         icon: "fa-solid fa-database"
-        url: /categories/#data-structure
+        url: /categories/data-structure/
       - title: "Algorithms"
         icon: "fa-solid fa-chart-diagram"
         url: /categories/#algorithm
