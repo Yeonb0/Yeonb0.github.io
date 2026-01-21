@@ -1,6 +1,6 @@
 ---
 categories:
-- Data Structure
+- Data-Structure
 date: '2026-01-21'
 tags:
 - DS

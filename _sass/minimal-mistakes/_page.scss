@@ -78,6 +78,12 @@ body {
   }
 }
 
+.page__title-divider {
+  margin: 1rem 0 0;
+  border: 0;
+  border-top: 1px solid $border-color;
+}
+
 .page__lead {
   font-family: $global-font-family;
   font-size: $type-size-4;
