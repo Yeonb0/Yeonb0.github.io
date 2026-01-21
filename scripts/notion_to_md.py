@@ -10,18 +10,19 @@ from notion_client import Client
 NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 DATABASE_ID = os.environ["NOTION_DB_ID"]
 
-OUTPUT_DIR = "_posts"
+POSTS_DIR = "_posts"
 IMAGE_DIR = "assets/images/notion"
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(POSTS_DIR, exist_ok=True)
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
 notion = Client(auth=NOTION_TOKEN)
 
-HEADERS = {
-  "Authorization": f"Bearer {NOTION_TOKEN}",
-  "Notion-Version": "2022-06-28"
-}
+# ==================================================
+# 유틸 함수
+# ==================================================
+def slugify(text):
+  return text.strip().replace(" ", "-").lower()
 
 # ==================================================
 # 이미지 다운로드
@@ -33,6 +34,7 @@ def download_image(url, name):
 
   if not os.path.exists(path):
     r = requests.get(url)
+    r.raise_for_status()
     with open(path, "wb") as f:
       f.write(r.content)
 
@@ -45,7 +47,7 @@ def block_to_md(block, page_id):
   t = block["type"]
 
   if t == "paragraph":
-    text = "".join([x["plain_text"] for x in block[t]["rich_text"]])
+    text = "".join(x["plain_text"] for x in block[t]["rich_text"])
     return text + "\n\n"
 
   if t == "heading_1":
@@ -77,7 +79,7 @@ def block_to_md(block, page_id):
   return ""
 
 # ==================================================
-# 상태 → 완료로 변경
+# 상태를 "완료"로 변경
 # ==================================================
 def update_status_done(page_id):
   notion.pages.update(
@@ -96,26 +98,32 @@ def update_status_done(page_id):
 # ==================================================
 def process_page(page):
   props = page["properties"]
-  status = props["상태"]["select"]["name"]
 
-  # 진행중만 업로드
+  status = props["상태"]["select"]["name"]
   if status != "진행중":
     return
 
   title = props["이름"]["title"][0]["plain_text"]
-  date = props["작성일"]["date"]["start"]
+  date_str = props["작성일"]["date"]["start"]
   category = props["카테고리"]["select"]["name"]
   tags = [t["name"] for t in props["태그"]["multi_select"]]
 
-  date_obj = datetime.fromisoformat(date)
-  filename = f"{date_obj.strftime('%Y-%m-%d')}-{title.replace(' ', '-').lower()}.md"
+  date_obj = datetime.fromisoformat(date_str)
+  date_prefix = date_obj.strftime("%Y-%m-%d")
+
+  safe_category = slugify(category)
+  category_dir = os.path.join(POSTS_DIR, safe_category)
+  os.makedirs(category_dir, exist_ok=True)
+
+  filename = f"{date_prefix}-{slugify(title)}.md"
+  file_path = os.path.join(category_dir, filename)
 
   # ----------------------
   # Front Matter
   # ----------------------
   front_matter = {
     "title": title,
-    "date": date,
+    "date": date_str,
     "categories": [category],
     "tags": tags,
     "toc": True,
@@ -137,11 +145,11 @@ def process_page(page):
   # 파일 생성 + 상태 변경
   # ----------------------
   try:
-    with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf-8") as f:
+    with open(file_path, "w", encoding="utf-8") as f:
       f.write(content)
 
     update_status_done(page["id"])
-    print(f"✔ Uploaded & marked done: {title}")
+    print(f"✔ Uploaded: {category}/{filename}")
 
   except Exception as e:
     print(f"❌ Failed: {title}")
