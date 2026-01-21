@@ -20,8 +20,8 @@
     float: inline-start;
     width: calc(#{$right-sidebar-width-narrow} - 1em);
     opacity: 1;
-    -webkit-transition: opacity 0.2s ease-in-out;
-    transition: opacity 0.2s ease-in-out;
+    -webkit-transition: opacity 0.2s ease-in-out, width 0.25s ease-in-out;
+    transition: opacity 0.2s ease-in-out, width 0.25s ease-in-out;
 
     &.sticky {
       overflow-y: auto;
@@ -76,6 +76,19 @@
   }
 }
 
+.sidebar__content {
+  transition: max-height 0.25s ease, opacity 0.2s ease, max-width 0.25s ease,
+    transform 0.25s ease;
+
+  @include breakpoint($large) {
+    max-height: none;
+    max-width: 100%;
+    opacity: 1;
+    overflow: hidden;
+    transform: translateX(0);
+  }
+}
+
 .sidebar__right {
   margin-bottom: 1em;
 
@@ -116,25 +129,25 @@
    - Reveal when hovering near the right edge
    ========================================================================== */
 .page--toc-collapsible {
-  position: relative;
-
   @include breakpoint($large) {
-    width: 100%;
+    width: calc(100% - #{$right-sidebar-width-narrow});
     padding-inline-end: 0;
   }
 
   @include breakpoint($x-large) {
-    width: 100%;
+    width: calc(100% - #{$right-sidebar-width});
     padding-inline-end: 0;
   }
 
-  &::after {
+  .toc-reveal {
+    display: none;
+
     @include breakpoint($large) {
-      content: "";
+      display: block;
       position: fixed;
       top: 0;
       inset-inline-end: 0;
-      width: 24px;
+      width:80px;
       height: 100%;
       z-index: 15;
     }
@@ -148,23 +161,15 @@
       margin-inline-end: 0;
       width: $right-sidebar-width-narrow;
       padding-inline-start: 0;
-      transform: translateX(calc(100% - 12px));
+      transform: translateX(calc(100% - 24px));
       opacity: 0;
       pointer-events: none;
       z-index: 20;
-      transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
+      transition: transform 0.3s ease, opacity 0.2s ease;
     }
 
     @include breakpoint($x-large) {
       width: $right-sidebar-width;
-    }
-
-    &:hover {
-      @include breakpoint($large) {
-        transform: translateX(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
     }
 
     &::before {
@@ -172,8 +177,8 @@
         content: "";
         position: absolute;
         top: 0;
-        inset-inline-start: -18px;
-        width: 18px;
+        inset-inline-start: -32px;
+        width: 32px;
         height: 100%;
       }
     }
@@ -185,14 +190,14 @@
     }
   }
 
-  &:hover .sidebar__right {
+  .toc-reveal:hover + .sidebar__right,
+  .sidebar__right:hover {
     @include breakpoint($large) {
       transform: translateX(0);
       opacity: 1;
       pointer-events: auto;
     }
   }
-
 }
 
 .splash .sidebar__right {
