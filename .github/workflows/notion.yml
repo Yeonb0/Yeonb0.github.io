@@ -1,0 +1,34 @@
+name: Sync Notion Notes
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # 6시간마다
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install notion-client notion2md pyyaml
+
+      - name: Run sync script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python scripts/notion_to_md.py
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "notion-bot"
+          git config --global user.email "bot@github.com"
+          git add .
+          git commit -m "Sync Notion lecture notes" || exit 0
+          git push
