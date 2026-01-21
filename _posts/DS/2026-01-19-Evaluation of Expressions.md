@@ -1,7 +1,8 @@
 ---
 layout: single
 title: "[DS] Evaluation of Expression"
-categories: Data-Structure
+categories:
+ - Data-Structure
 tag: [DS, 자료구조]
 ---
 
@@ -55,7 +56,7 @@ tag: [DS, 자료구조]
 
 → 피연산자들은 모두 push, 연산자 만나면 2개 pop, 계산 후 다시 push
 
-<img src="../images/2026-01-19-Evaluation of Expressions/e5a93ad3-48e3-41e8-b91f-00635a962603.png" alt="e5a93ad3-48e3-41e8-b91f-00635a962603" style="zoom: 50%;" />
+<img src="../../assets/images/posts/2026-01-19-Evaluation of Expressions/e5a93ad3-48e3-41e8-b91f-00635a962603.png" alt="e5a93ad3-48e3-41e8-b91f-00635a962603" style="zoom:50%;" />
 
 
 
@@ -152,7 +153,7 @@ ex) a / b - c + d * e - a * c
         - stack으로 들어갈 때 : 20. 반드시 들어감.
         - stack에서 나갈 때(다른 것과 비교) : 0. `)` 나오기 전까진 `(` 위에 연산자 쌓임
 
-<img src="../images/2026-01-19-Evaluation of Expressions/789b3ed4-f41c-4c70-8450-5d1eca08a920.png" alt="789b3ed4-f41c-4c70-8450-5d1eca08a920" style="zoom:80%;" />
+<img src="../../assets/images/posts/2026-01-19-Evaluation of Expressions/789b3ed4-f41c-4c70-8450-5d1eca08a920.png" alt="789b3ed4-f41c-4c70-8450-5d1eca08a920" style="zoom: 50%;" />
 
 ```cpp
 precedence stack[MAX_STACK_SIZE];

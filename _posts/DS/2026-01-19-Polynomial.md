@@ -1,7 +1,8 @@
 ---
 layout: single
 title: "[DS] Polynomial"
-categories: Data-Structure
+categories:
+  - Data-Structure
 tag: [DS, 자료구조, 다항식]
 ---
 
@@ -92,6 +93,8 @@ tag: [DS, 자료구조, 다항식]
   >
   > ​	**return** 다항식 poly1 · poly2
   
+  
+  
   ### Polynomial Representation
   
   - [Program 2.5] : Initial version of padd function
@@ -162,7 +165,7 @@ tag: [DS, 자료구조, 다항식]
   
   계수는 내림차순으로 정렬되어 있음.
   
-  <img src="../images/2026-01-19-Polynomial/image.png" alt="image" style="zoom: 67%;" />
+  <img src="../../assets/images/posts/2026-01-19-Polynomial/image.png" alt="image" style="zoom:67%;" />
   
   
   

@@ -1,7 +1,8 @@
 ---
 layout: single
 title: "[DS] Sparse Matrix"
-categories: Data-Structure
+categories:
+  - Data-Structure
 tag: [DS, 자료구조, 행렬, 희소 행렬]
 ---
 
@@ -13,7 +14,7 @@ tag: [DS, 자료구조, 행렬, 희소 행렬]
 
 - 희소 행렬 : 0이 많은 행렬
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 1.png" alt="image 1" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 1.png" alt="image 1" style="zoom:50%;" />
 
 → 만약 2차원 배열을 사용하면 낭비하는 칸이 많다.
 
@@ -63,19 +64,19 @@ term a[MAX_TERMS];
 
 - 행렬의 전치 → 행과 열을 바꾸는 것
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 1.png" alt="image 1" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 1-1768978351768-21.png" alt="image 1" style="zoom:50%;" />
 
 → 행렬 A
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 2.png" alt="image 2" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 2.png" alt="image 2" style="zoom:50%;" />
 
 → 행렬 A 를 배열로 나타낸 것
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 3.png" alt="image 3" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 3.png" alt="image 3" style="zoom:50%;" />
 
 → 행렬 A의 전치를 배열로 나타낸 것
 
-<Simple Algorithm>
+- Simple Algorithm
 
 ```c
 for each row i // 각 행 i 에 대해
@@ -167,9 +168,11 @@ void fast_transpose(term a[], term b[]){ // 원래 행렬 a, a를 전치한 행�
 
 만약 행렬이 꽉 차있다면 → O(rows · columns)
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 4.png" alt="image 4" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 4.png" alt="image 4" style="zoom:50%;" />
 
 - row_terms 와 staring_pos라는 추가적인 배열 이용 → 시간 복잡도는 줄지만 공간 복잡도는 늘어난다
+
+
 
 ### Matrix Multiplication
 
@@ -276,11 +279,11 @@ void mmult(term a[], term b[], term d[]{ // 희소 행렬 a, b를 곱해 d에 �
 
 → 주어진 행렬 
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 5.png" alt="image 5" style="zoom: 67%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 5.png" alt="image 5" style="zoom:50%;" />
 
 일 때,
 
-<img src="../images/2026-01-19-Sparse_Matrix/image 6.png" alt="image 6" style="zoom:50%;" />
+<img src="../../assets/images/posts/2026-01-19-Sparse_Matrix/image 6.png" alt="image 6" style="zoom:50%;" />
 
 → 이렇게 행렬 저장 a[], new_b[]
 
@@ -298,7 +301,7 @@ b의 term+1 만큼 순회
 # Multidimensional Array
 
 - 다차원 배열
-    - 배열 선언이 a\[upper₀][upper₁]···[upperₙ₋₁] 이라면, 이 배열의 원소 수는 다음과 같다
+    - 배열 선언이 a[upper₀][upper₁]···[upperₙ₋₁] 이라면, 이 배열의 원소 수는 다음과 같다
     
     $$
     \prod_{i=0}^{n-1} upper_i
@@ -308,14 +311,14 @@ b의 term+1 만큼 순회
     
 - 다차원 배열 표현법 → Good Note
     - row major order
-        - a\[upper$_0$][upper$_1$]
+        - a[upper$_0$][upper$_1$]
     
 
-<img src="../images/2026-01-19-Sparse_Matrix/image.png" alt="image" style="zoom:67%;" />
+![image](../../assets/images/posts/2026-01-19-Sparse_Matrix/image.png)
 
-- a\[i][j]의 주소는 a + i × upper$_1$+ j
-- a\[i]\[j]\[k]의 주소는 a + i × upper$_1$ × upper$_2$ + j × upper$_2$ + k
+- a[i][j]의 주소는 a + i × upper$_1$+ j
+- a[i][j][k]의 주소는 a + i × upper$_1$ × upper$_2$ + j × upper$_2$ + k
 
 - column major order
-    - a\[i]\[j] = a + j × upper$_0$ + i
-    - a\[i]\[j]\[k] = a + k × upper$_1$ × upper$_0$ + j × upper$_0$ + i
+    - a[i][j] = a + j × upper$_0$ + i
+    - a[i][j][k] = a + k × upper$_1$ × upper$_0$ + j × upper$_0$ + i

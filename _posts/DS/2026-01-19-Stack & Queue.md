@@ -1,7 +1,8 @@
 ---
 layout: single
 title: "[DS] Stack & Queue"
-categories: Data-Structure
+categories:
+  - Data-Structure
 tag: [DS, 자료구조, 스택, 큐]
 ---
 
@@ -23,7 +24,9 @@ ordered list(순차 리스트)의 특수한 형태
     
 - Last-In-First-Out (LIFO) list
 
-<img src="../images/2026-01-19-Stack & Queue/image.png" alt="image" style="zoom: 67%;" />
+- <img src="../../assets/images/posts/2026-01-19-Stack & Queue/image.png" alt="image" style="zoom: 50%;" />
+
+
 
 - Example 3.1 [System Stack]
   
@@ -136,7 +139,7 @@ void stackFull(){
     
 - First-In-First-Out(FIFO) list
 
-<img src="../images/2026-01-19-Stack & Queue/image 1.png" alt="image 1" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-Stack & Queue/image (1).png" alt="image (1)" style="zoom:50%;" />
 
 - [ADT 3.2] : Queue
 
@@ -184,7 +187,7 @@ Queue CreateQ(maxQueueSize) ::=
 	Boolean IsFullQ(queue) ::= rear == MAX_QUEUE_SIZE // rear가 더 증가할 수 없을 때 queue 꽉 참
 ```
 
-<img src="../images/2026-01-19-Stack & Queue/image 2.png" alt="image 2" style="zoom: 67%;" />
+<img src="../../assets/images/posts/2026-01-19-Stack & Queue/image (2).png" alt="image (2)" style="zoom:50%;" />
 
 → front 인덱스 자체에는 값이 존재하지 않음
 
@@ -213,22 +216,23 @@ element deleteq(){ // queue의 front에서 데이터 삭제
     
     
     
-    <img src="../images/2026-01-19-Stack & Queue/image 3.png" alt="image 3" style="zoom:67%;" />
+    <img src="../../assets/images/posts/2026-01-19-Stack & Queue/image (5).png" alt="image (5)" style="zoom:50%;" />
     
     
     
 - queueFull의 문제점
-    
+  
     - `rear`가 `MAX_QUEUE_SIZE - 1` 에 도달하면 그 queue는 더 이상 늘릴 수 없음.
     - front를 옮기며 쓸모 없어진 앞쪽을 사용하고 싶은데 그건 힘듬..
     - 시간복잡도도  높음 : 최악의 경우 O(MAX_QUEUE_SIZE)
     
 - Circular Queue
     - `queue[MAX_QUEUE_SIZE]` 를 원형이라고 취급.
+    - <img src="../../assets/images/posts/2026-01-19-Stack & Queue/image (3).png" alt="image (3)" style="zoom:50%;" />
     
     
     
-    <img src="../images/2026-01-19-Stack & Queue/image 4.png" alt="image 4" style="zoom: 50%;" />
+    
     
     
     
@@ -236,8 +240,7 @@ element deleteq(){ // queue의 front에서 데이터 삭제
     - `rear` 인덱스는 마지막 element의 위치. queue의 끝 가리킴
     - `front == rear` 일 때 queue 가 꽉 참
     - 총 element 가 `MAX_QUEUE_SIZE - 1` 개 일 때 꽉 참 → 항상 1칸은 비어있음(실제 값이 비어있는 것은 아님. front와 rear간의 거리가 1)
-
-<img src="../images/2026-01-19-Stack & Queue/image 5.png" alt="image 5" style="zoom: 50%;" />
+    - <img src="../../assets/images/posts/2026-01-19-Stack & Queue/image (4).png" alt="image (4)" style="zoom:50%;" />
 
 - 원형 큐에서 회전은 어떻게 일어나는가?
   
@@ -286,9 +289,9 @@ element deleteq(){ // 원형 큐에서 item에 삭제
         2. [front+1] ~ [capacity-1] 값 까지를 0에서부터 채운다.
         3. [0] ~ [rear] 값 까지를 capacity-front-1 부터 채운다.
     
-    <img src="../images/2026-01-19-Stack & Queue/15dae21c-5203-4adb-8a24-dccb548f4d50.png" alt="15dae21c-5203-4adb-8a24-dccb548f4d50" style="zoom: 25%;" />
+    <img src="../../assets/images/posts/2026-01-19-Stack & Queue/IMG_1188-1768978765341-36.png" alt="IMG_1188" style="zoom:50%;" />
 
-<img src="../images/2026-01-19-Stack & Queue/883e758c-7d5c-47e5-887b-31745e1c3804.png" alt="883e758c-7d5c-47e5-887b-31745e1c3804" style="zoom: 33%;" />
+<img src="../../assets/images/posts/2026-01-19-Stack & Queue/IMG_1189.png" alt="IMG_1189" style="zoom:50%;" />
 
 - [Program 3.9] : Add to a circular queue
 
@@ -302,6 +305,7 @@ void addq(element item){ // 원형 큐에 item 추가
 ```
 
 - [Program 3.10] : Doubling queue capacity
+    
     - 
       
         ```c

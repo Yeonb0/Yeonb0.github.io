@@ -1,7 +1,8 @@
 ---
 layout: single
 title: "[DS] A Mazing Problem"
-categories: Data-Structure
+categories:
+  - Data-Structure
 tag: [DS, 자료구조, 격자 그래프]
 ---
 
@@ -14,19 +15,20 @@ tag: [DS, 자료구조, 격자 그래프]
 - 1 : 막힌 길
 - 0 : 통과 가능한 길
 
-<img src="../images/2026-01-19-A Mazing Problem/image.png" alt="image" style="zoom:67%;" />
+<img src="../../assets/images/posts/2026-01-19-A Mazing Problem/image.png" alt="image" style="zoom:67%;" />
 
 - border-line 은? → 1로 둘러싸기.
     - (가로+2) * (세로+2)
     
-    <img src="../images/2026-01-19-A Mazing Problem/f22d4763-0782-4918-b0ab-cd7bf4048f8c.png" alt="f22d4763-0782-4918-b0ab-cd7bf4048f8c" style="zoom:67%;" />
+    <img src="../../assets/images/posts/2026-01-19-A Mazing Problem/f22d4763-0782-4918-b0ab-cd7bf4048f8c.png" alt="f22d4763-0782-4918-b0ab-cd7bf4048f8c" style="zoom:67%;" />
     
     - 시작 위치 [1][1]
     - 출구 위치 [m][p]
 - 8 방향으로 이동할 수 있음
     - 배열 `move` 에 가능한 방향 저장
+    - <img src="../../assets/images/posts/2026-01-19-A Mazing Problem/6436bb7a-6969-4b8e-8a0d-3f3dd205f471.png" alt="6436bb7a-6969-4b8e-8a0d-3f3dd205f471" style="zoom:50%;" />
     
-    <img src="../images/2026-01-19-A Mazing Problem/6436bb7a-6969-4b8e-8a0d-3f3dd205f471.png" alt="6436bb7a-6969-4b8e-8a0d-3f3dd205f471" style="zoom:60%;" />
+    
     
     ```cpp
     typedef struct {
@@ -39,31 +41,32 @@ tag: [DS, 자료구조, 격자 그래프]
     
     → 8 방향에 대한 이동 정보 : 순서대로 이동 가능한지 확인
     
-    | 이름 | 방향 | move[dir].vert | move[dir].horiz |
-    | --- | --- | --- | --- |
-    | N ⬆️ | 0 | -1 | 0 |
-    | NE ↗️ | 1 | -1 | 1 |
-    | E ➡️ | 2 | 0 | 1 |
-    | SE ↘️ | 3 | 1 | 1 |
-    | S ⬇️ | 4 | 1 | 0 |
-    | SW ↙️ | 5 | 1 | -1 |
-    | W ⬅️ | 6 | 0 | -1 |
-    | NW ↖️ | 7 | -1 | -1 |
-    - 우리가 `maze[row][col]` 위치에 있다면
-      
-        ```cpp
-        nextRow = row + move[dir].vert;
-        nextCol = col + move[dir].horiz;
+| 이름 | 방향 | move[dir].vert | move[dir].horiz |
+| --- | --- | --- | --- |
+| N ⬆️ | 0 | -1 | 0 |
+| NE ↗️ | 1 | -1 | 1 |
+| E ➡️ | 2 | 0 | 1 |
+| SE ↘️ | 3 | 1 | 1 |
+| S ⬇️ | 4 | 1 | 0 |
+| SW ↙️ | 5 | 1 | -1 |
+| W ⬅️ | 6 | 0 | -1 |
+| NW ↖️ | 7 | -1 | -1 |
+
+- 우리가 `maze[row][col]` 위치에 있다면
+
+```cpp
+nextRow = row + move[dir].vert;
+nextCol = col + move[dir].horiz;
         
-        blue : 현재 위치
-        red : 이동할 값(offset)
-        ```
+blue : 현재 위치
+red : 이동할 값(offset)
+```
+
+`maze[nextRow][nextCol]` → 다음으로 이동할 위치
         
-        `maze[nextRow][nextCol]` → 다음으로 이동할 위치
-        
-    - `mark` : 2차원 배열, 이미 확인한 미로 위치 기록.
-        - 출발 ~ 현 위치까지의 길 저장 by `stack`
-        - 길 가다가 막히면 되돌아가기 위해.
+- `mark` : 2차원 배열, 이미 확인한 미로 위치 기록.
+    - 출발 ~ 현 위치까지의 길 저장 by `stack`
+    - 길 가다가 막히면 되돌아가기 위해.
 
 ### [Program 3.11] : Initial maze program
 
@@ -93,7 +96,7 @@ tag: [DS, 자료구조, 격자 그래프]
     printf("No path found"); // 미로 탈출 실패
     ```
     
-    <img src="../images/2026-01-19-A Mazing Problem/73fc6054-bf23-4fca-8e6b-f53f549986c6.png" alt="73fc6054-bf23-4fca-8e6b-f53f549986c6" style="zoom:40%;" />
+    <img src="../../assets/images/posts/2026-01-19-A Mazing Problem/73fc6054-bf23-4fca-8e6b-f53f549986c6.png" alt="73fc6054-bf23-4fca-8e6b-f53f549986c6" style="zoom:50%;" />
     
 - Stack 정의
 
@@ -174,6 +177,6 @@ void path(void) {
 
 - 미로에서 starting position은 1, 1 → stack[0]에 저장
 
-![bd3f98f5-41d7-4736-9673-b69f2af31d10](../images/2026-01-19-A Mazing Problem/bd3f98f5-41d7-4736-9673-b69f2af31d10.png)
+<img src="../../assets/images/posts/2026-01-19-A Mazing Problem/bd3f98f5-41d7-4736-9673-b69f2af31d10.png" alt="bd3f98f5-41d7-4736-9673-b69f2af31d10" style="zoom:67%;" />
 
-<img src="../images/2026-01-19-A Mazing Problem/bc164c3a-cbb0-496b-b3a2-3b725311ec59.png" alt="bc164c3a-cbb0-496b-b3a2-3b725311ec59" style="zoom:75%;" />
+<img src="../../assets/images/posts/2026-01-19-A Mazing Problem/bc164c3a-cbb0-496b-b3a2-3b725311ec59.png" alt="bc164c3a-cbb0-496b-b3a2-3b725311ec59" style="zoom: 67%;" />
