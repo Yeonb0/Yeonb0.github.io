@@ -16,7 +16,19 @@
       {% assign icon_class = nil %}
       {% for section in site.data.navigation.docs %}
         {% for item in section.children %}
-          {% if item.url contains category_slug %}
+          {% assign item_slug = nil %}
+          {% assign url_parts = item.url | split: "#" %}
+          {% if url_parts.size > 1 %}
+            {% assign item_slug = url_parts | last %}
+          {% else %}
+            {% assign path_parts = item.url | split: "/" %}
+            {% for part in path_parts reversed %}
+              {% if part != "" and item_slug == nil %}
+                {% assign item_slug = part %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if item_slug == category_slug %}
             {% assign icon_class = item.icon %}
           {% endif %}
         {% endfor %}

@@ -57,14 +57,14 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Operation-System" %}
-                        <li><i class="fa-solid fa-database" style="color: $toc-color;"></i><a href="/categories/operation-system" class="">OS ({{category[1].size}})</a></li>
+                        <li><i class="fa-brands fa-windows" style="color: $toc-color;"></i><a href="/categories/operation-system" class="">OS ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Computer-Organization" %}
-                        <li><i class="fa-solid fa-chart-diagram" style="color: $toc-color;"></i><a href="/categories/computer-organization" class="">Computer Organization ({{category[1].size}})</a></li>
+                        <li><i class="fa-solid fa-desktop" style="color: $toc-color;"></i><a href="/categories/computer-organization" class="">Computer Organization ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
