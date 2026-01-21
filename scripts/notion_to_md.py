@@ -1,7 +1,7 @@
 import os
+import re
 import requests
 import yaml
-from datetime import datetime
 from notion_client import Client
 
 # ==================================================
@@ -29,7 +29,19 @@ def slugify(text: str) -> str:
     .replace("/", "-")
   )
 
+# --------------------------------------------------
+# rich_text → Markdown (+ $$ LaTeX block 지원)
+# --------------------------------------------------
 def rich_text_to_md(rich_text):
+  raw_text = "".join(t["plain_text"] for t in rich_text)
+
+  # 🔥 $$ ... $$ 수식 블록 감지 (문단 전체가 LaTeX일 때만)
+  m = re.fullmatch(r"\$\$\s*([\s\S]+?)\s*\$\$", raw_text.strip())
+  if m:
+    expr = m.group(1)
+    return "$$\n" + expr + "\n$$"
+
+  # 일반 텍스트 처리 (annotation 유지)
   md = ""
   for t in rich_text:
     txt = t["plain_text"]
@@ -48,13 +60,14 @@ def rich_text_to_md(rich_text):
       txt = f"[{txt}]({t['href']})"
 
     md += txt
+
   return md
 
 # ==================================================
 # Image (post-level folder)
 # ==================================================
 def download_image(url, post_slug, name):
-  headers = {"User-Agent": "Mozilla/5.0 (GitHub Actions Notion Sync)"}
+  headers = {"User-Agent": "Mozilla/5.0 (Notion Sync)"}
   try:
     r = requests.get(url, headers=headers, timeout=10)
     r.raise_for_status()
@@ -94,7 +107,7 @@ def get_children(block_id):
   return blocks
 
 # ==================================================
-# Block -> Markdown (recursive)
+# Block → Markdown (recursive)
 # ==================================================
 def block_to_md(block, post_slug, img_idx, depth=0):
   md = ""
@@ -102,7 +115,11 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   indent = "  " * depth
 
   if t == "paragraph":
-    md += rich_text_to_md(block[t]["rich_text"]) + "\n\n"
+    text = rich_text_to_md(block[t]["rich_text"])
+    if text.startswith("$$"):
+      md += text + "\n\n"
+    else:
+      md += text + "\n\n"
 
   elif t.startswith("heading_"):
     level = int(t[-1])
@@ -140,7 +157,6 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     text = rich_text_to_md(callout["rich_text"])
     md += f"> {icon}{text}\n"
 
-    # children도 blockquote로 포함
     if block.get("has_children"):
       children = get_children(block["id"])
       for c in children:
@@ -160,7 +176,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   return md, img_idx
 
 # ==================================================
-# Status update (select/status)
+# Status update (select / status)
 # ==================================================
 def update_status_done(page_id, status_prop):
   key = "select" if status_prop["type"] == "select" else "status"

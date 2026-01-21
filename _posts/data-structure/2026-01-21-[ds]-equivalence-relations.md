@@ -31,11 +31,11 @@ toc_sticky: true
 - How to Solve?
   - Fisrt phase : 동치 쌍을 읽고 저장.
   - Second phase : 동치 쌍을 판단
-<0, j> 부터 시작.
+  <0, j> 부터 시작.
 
-<j, k> 가 있을 때, <0, k> 
+​		<j, k> 가 있을 때, <0, k> 
 
-0과 관련된 모든 동치 출력, 그 후 다른 수에 대해서도 반복(중복 X)
+​		0과 관련된 모든 동치 출력, 그 후 다른 수에 대해서도 반복(중복 X)
 
 
 
@@ -62,7 +62,7 @@ void equivalence() {
 - pair 들을 담을 자료구조
   - m : pair 의 갯수 (9개)
   - n : 원소의 갯수 (0~11, 12개)
-→ array 사용 : pairs[n][m]
+  → array 사용 : pairs[n][m]
 
 ex) 0≡4, pairs[0][0] 에 4 저장
 

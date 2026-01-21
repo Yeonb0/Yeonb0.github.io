@@ -28,7 +28,14 @@ toc_sticky: true
 typedef struct {
 	int key;
 	/* other fields */
-} 
+} element;
+typedef struct _stack {
+	element item;
+	struct _stack *link;
+} stack;
+typedef stack *stack_pointer; // stack의 주소를 갖는 포인터
+
+stack_pointer top[MAX_STACKS]; // stack 10개를 저장하는 배열
 ```
 
 
@@ -46,7 +53,17 @@ top[i] = NULL, 0 <= i < MAX_STACKS
 ###  [Program 4.8] : Add to Stack
 
 ```c++
-void add(
+void add(stack_pointer *top, element item) {
+	// item을 i번째 stack의 top에 추가
+	stack_pointer temp = (stack_pointer) malloc(sizeof(stack));
+	if (IS_FULL(temp)) { // 저장 공간이 없을 경우
+		fprintf(stderr, "The memory is full\n");
+		exit(1);
+	}
+	temp->item = item; // data 저장
+	temp->link = *top; // top에 temp 연결
+	*top = temp; // top을 한 칸 앞으로 이동
+}
 ```
 
 - 호출 : add(&top[i], item)
@@ -61,7 +78,19 @@ ex) add(&top[8], 3)
 ###  [Program 4.9] : Delete from Stack
 
 ```c++
-element
+element delete(stack_pointer *top) {
+	// i 번째 stack에서 top 삭제
+	stack_pointer temp = *top; // call-by-ref, temp는 double pointer
+	element item;
+	if(IS_EMPTY(temp)) { // stack 이 비었을 경우
+		fprintf(stderr, "The stack is empty\n");
+		exit(1);
+	}
+	item = temp->item;
+	*top = temp->link;
+	free(temp);
+	return item;
+}
 ```
 
 - 호출 : delete(&top[i]);
@@ -81,12 +110,15 @@ ex) delete(&top[8])
 typedef struct {
 	int key;
 	/* other fields */
-} 
+} element;
+typedef struct _queue {
+	element item;
+	struct _queue *link;
+} queue;
+typedef queue *queue_pointer;
+
+queue_pointer front[MAX_QUEUES], rear[MAX_QUEUES]; // queue 10개를 저장
 ```
-
-
-
-
 
 - empty queue 초기화
 ```c++
@@ -101,7 +133,20 @@ front[i] = NULL, 0 <= i < MAX_QUEUES
 ###  [Program 4.10] : Add to Queue
 
 ```c++
-void addq(
+void addq(queue_pointer *front, queue_pointer *rear, element item) {
+	// i번째 queue의 rear에 item 추가
+	queue_pointer temp = (queue_pointer) malloc(sizeof(queue));
+	if IS_FULL(temp)) {
+		fprintf(stderr, "The memory is full\n");
+		exit(1);
+	}
+	temp->item = item;
+	temp->link = NULL;
+	if (*front) // front가 존재하면 
+		(*rear)->link = temp;
+	else // 비었을 때
+		*front = temp; 
+}
 ```
 
 ![](/assets/images/notion/[ds]-dynamically-linked-stacks-and-queues/img_4.png)
@@ -122,7 +167,19 @@ ex) add(&front[9], 4)
 ###  [Program 4.11] : Delete from Queue
 
 ```c++
-element
+element deleteq(queue_pointer *front) {
+	// i번째 queue에서 front 한 칸 뒤로
+	queue_pointer temp = *front;
+	element item;
+	if (IS_EMPTY(*front)) { // queue 가 비었으면
+		fprintf(stderr, "The queue is empty\n");
+		exit(1);
+	}
+	item = temp->item;
+	*front = temp->link;
+	free(temp)
+	return item;
+}
 ```
 
 - 호출 : delete(&front[i])

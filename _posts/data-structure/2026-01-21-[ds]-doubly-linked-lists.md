@@ -36,7 +36,13 @@ ptr == ptr->llink->rlink == ptr->rlink->llink
 ### [Program 4.26] : Insertion to Doubly Linked Circular List
 
 ```c
-void dinsert(
+void dinsert(node_pointer node, node_pointer newnode) {
+	// node의 오른쪽에 newnode 추가
+	newnode->llink = node;
+	newnode->rlink = node->rlink;
+	node->rlink->llink = newnode;
+	node->rlink = newnode;
+}
 ```
 
 ![](/assets/images/notion/[ds]-doubly-linked-lists/img_3.png)
