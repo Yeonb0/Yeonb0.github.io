@@ -30,33 +30,35 @@ def slugify(text: str) -> str:
   )
 
 # --------------------------------------------------
-# rich_text → Markdown (+ $$ LaTeX block 지원)
+# rich_text → Markdown
 # --------------------------------------------------
 def rich_text_to_md(rich_text):
+  if not rich_text:
+    return ""
+
   raw_text = "".join(t["plain_text"] for t in rich_text)
 
-  # 🔥 $$ ... $$ 수식 블록 감지 (문단 전체가 LaTeX일 때만)
+  # $$ LaTeX block (문단 전체일 때만)
   m = re.fullmatch(r"\$\$\s*([\s\S]+?)\s*\$\$", raw_text.strip())
   if m:
     expr = m.group(1)
     return "$$\n" + expr + "\n$$"
 
-  # 일반 텍스트 처리 (annotation 유지)
   md = ""
   for t in rich_text:
     txt = t["plain_text"]
     ann = t["annotations"]
 
-    if ann["code"]:
+    if ann.get("code"):
       txt = f"`{txt}`"
-    if ann["bold"]:
+    if ann.get("bold"):
       txt = f"**{txt}**"
-    if ann["italic"]:
+    if ann.get("italic"):
       txt = f"*{txt}*"
-    if ann["strikethrough"]:
+    if ann.get("strikethrough"):
       txt = f"~~{txt}~~"
 
-    if t["href"]:
+    if t.get("href"):
       txt = f"[{txt}]({t['href']})"
 
     md += txt
@@ -64,7 +66,7 @@ def rich_text_to_md(rich_text):
   return md
 
 # ==================================================
-# Image (post-level folder)
+# Image
 # ==================================================
 def download_image(url, post_slug, name):
   headers = {"User-Agent": "Mozilla/5.0 (Notion Sync)"}
@@ -77,7 +79,7 @@ def download_image(url, post_slug, name):
 
   ct = r.headers.get("Content-Type", "")
   ext = "png"
-  if "jpg" in ct or "jpeg" in ct:
+  if "jpeg" in ct or "jpg" in ct:
     ext = "jpg"
   elif "gif" in ct:
     ext = "gif"
@@ -107,7 +109,7 @@ def get_children(block_id):
   return blocks
 
 # ==================================================
-# Block → Markdown (recursive)
+# Block → Markdown
 # ==================================================
 def block_to_md(block, post_slug, img_idx, depth=0):
   md = ""
@@ -116,10 +118,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
 
   if t == "paragraph":
     text = rich_text_to_md(block[t]["rich_text"])
-    if text.startswith("$$"):
-      md += text + "\n\n"
-    else:
-      md += text + "\n\n"
+    md += text + "\n\n"
 
   elif t.startswith("heading_"):
     level = int(t[-1])
@@ -146,11 +145,9 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     else:
       md += f"![]({img['external']['url']})\n\n"
 
-  # 📎 callout → blockquote (추천 방식)
   elif t == "callout":
     callout = block["callout"]
     icon = ""
-
     if callout.get("icon") and callout["icon"]["type"] == "emoji":
       icon = callout["icon"]["emoji"] + " "
 
@@ -158,25 +155,50 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     md += f"> {icon}{text}\n"
 
     if block.get("has_children"):
-      children = get_children(block["id"])
-      for c in children:
+      for c in get_children(block["id"]):
         child_md, img_idx = block_to_md(c, post_slug, img_idx, depth)
         for line in child_md.splitlines():
           if line.strip():
             md += f"> {line}\n"
         md += "\n"
 
+  # =========================
+  # 📊 table → Markdown table
+  # =========================
+  elif t == "table":
+    rows = get_children(block["id"])
+    has_header = block["table"].get("has_column_header", False)
+
+    table_md = []
+    for i, row in enumerate(rows):
+      if row["type"] != "table_row":
+        continue
+
+      cells = []
+      for cell in row["table_row"]["cells"]:
+        cell_md = rich_text_to_md(cell).replace("\n", "<br>")
+        cells.append(cell_md)
+
+      table_md.append("| " + " | ".join(cells) + " |")
+
+      # header separator
+      if i == 0 and has_header:
+        sep = "| " + " | ".join(["---"] * len(cells)) + " |"
+        table_md.append(sep)
+
+    md += "\n".join(table_md) + "\n\n"
+    return md, img_idx  # ⚠️ table은 여기서 종료
+
   # children (재귀)
-  if block.get("has_children") and t != "callout":
-    children = get_children(block["id"])
-    for c in children:
+  if block.get("has_children") and t not in ("callout", "table"):
+    for c in get_children(block["id"]):
       child_md, img_idx = block_to_md(c, post_slug, img_idx, depth + 1)
       md += child_md
 
   return md, img_idx
 
 # ==================================================
-# Status update (select / status)
+# Status update
 # ==================================================
 def update_status_done(page_id, status_prop):
   key = "select" if status_prop["type"] == "select" else "status"
@@ -225,9 +247,8 @@ def process_page(page):
 
   content = "---\n" + yaml.dump(front, allow_unicode=True) + "---\n\n"
 
-  blocks = get_children(page["id"])
   img_idx = 1
-  for b in blocks:
+  for b in get_children(page["id"]):
     md, img_idx = block_to_md(b, post_slug, img_idx)
     content += md
 
