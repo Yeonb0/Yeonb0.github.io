@@ -4,7 +4,7 @@ categories:
 date: '2026-01-21'
 tags:
 - DS
-- 자료구조
+- 자료 구조
 - 연결 리스트
 title: '[DS] Doubly Linked Lists'
 toc: true
