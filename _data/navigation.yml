@@ -9,7 +9,7 @@ main:
   
 
 docs:
-  - title: "Languages"
+  - title: "Language"
     children:
       - title: "C/C++"
         icon: "fa-solid fa-c"
