@@ -131,9 +131,13 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     md += indent + "1. " + rich_text_to_md(block[t]["rich_text"]) + "\n"
 
   elif t == "code":
+    code_text = block[t]["rich_text"][0]["plain_text"]  
+
+    md += "{% raw %}\n"
     md += f"```{block[t]['language']}\n"
-    md += block[t]["rich_text"][0]["plain_text"]
-    md += "\n```\n\n"
+    md += code_text.rstrip()
+    md += "\n```\n"
+    md += "{% endraw %}\n\n"
 
   elif t == "image":
     img = block["image"]
