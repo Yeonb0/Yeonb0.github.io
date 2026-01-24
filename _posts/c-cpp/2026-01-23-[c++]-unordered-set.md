@@ -98,7 +98,7 @@ toc_sticky: true
 ```
 {% endraw %}
 
-## **7. ****`std::set`**** vs ****`std::unordered_set`**
+## **7. `std::set` vs `std::unordered_set`**
 
 | **항목** | **`std::set`** | **`std::unordered_set`** |
 | 내부 구조 | 트리 (Red-Black Tree) | 해시 테이블 |

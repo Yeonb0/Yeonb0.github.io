@@ -100,7 +100,7 @@ toc_sticky: true
 ```
 {% endraw %}
 
-## **7. ****`std::map`**** vs ****`std::unordered_map`**
+## **7. `std::map` vs `std::unordered_map`**
 
 | **항목** | **`std::map`** | **`std::unordered_map`** |
 | 내부 구조 | 이진 탐색 트리 | 해시 테이블 |
