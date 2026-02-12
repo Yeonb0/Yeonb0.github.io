@@ -163,10 +163,16 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   if t == "paragraph":
     text = rich_text_to_md(block[t]["rich_text"])
     md += text + "\n\n"
-
+  
   elif t.startswith("heading_"):
-    level = int(t[-1])
-    md += "#" * level + " " + rich_text_to_md(block[t]["rich_text"]) + "\n\n"
+    text = rich_text_to_md(block[t]["rich_text"])
+
+    # 리스트 안에 있는 heading이면 → bold bullet로 변환
+    if depth > 0:
+      md += indent + "- **" + text + "**\n"
+    else:
+      level = int(t[-1])
+      md += "#" * level + " " + text + "\n\n"
 
   elif t == "bulleted_list_item":
     md += indent + "- " + rich_text_to_md(block[t]["rich_text"]) + "\n"
