@@ -65,6 +65,50 @@ def rich_text_to_md(rich_text):
 
   return md
 
+
+def normalize_markdown(content: str) -> str:
+  """
+  - heading(##~######) 위/아래에 빈 줄을 강제
+  - 목록 기호가 코드블록으로 오인될 수 있는 패턴(루트에서 4칸 들여쓴 bullet) 완화
+  """
+  lines = content.splitlines()
+  out = []
+
+  heading_re = re.compile(r"^#{1,6}\s+")
+  list_re = re.compile(r"^\s{0,3}(?:[-*+]\s+|\d+[.)]\s+)")
+  deep_bullet_re = re.compile(r"^ {4}([-*+]\s+.*)$")
+
+  i = 0
+  while i < len(lines):
+    line = lines[i]
+
+    # 루트에서 4칸 bullet인데 직전 문맥이 목록이 아니면 2칸으로 완화
+    m = deep_bullet_re.match(line)
+    if m:
+      j = len(out) - 1
+      while j >= 0 and out[j].strip() == "":
+        j -= 1
+      prev = out[j] if j >= 0 else ""
+      if not list_re.match(prev):
+        line = "  " + m.group(1)
+
+    # heading 위/아래 빈 줄 보장
+    if heading_re.match(line):
+      if out and out[-1].strip() != "":
+        out.append("")
+      out.append(line)
+
+      if i + 1 < len(lines) and lines[i + 1].strip() != "":
+        out.append("")
+      i += 1
+      continue
+
+    out.append(line)
+    i += 1
+
+  normalized = "\n".join(out)
+  return normalized.rstrip() + "\n"
+
 # ==================================================
 # Image
 # ==================================================
@@ -255,6 +299,8 @@ def process_page(page):
   for b in get_children(page["id"]):
     md, img_idx = block_to_md(b, post_slug, img_idx)
     content += md
+
+  content = normalize_markdown(content)
 
   with open(path, "w", encoding="utf-8") as f:
     f.write(content)

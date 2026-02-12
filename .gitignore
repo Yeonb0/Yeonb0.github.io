@@ -30,3 +30,9 @@ codekit-config.json
 .sass-cache
 _asset_bundler_cache
 _site
+
+# Test Folder
+/_test
+
+# Obsidian 
+/.obsidian

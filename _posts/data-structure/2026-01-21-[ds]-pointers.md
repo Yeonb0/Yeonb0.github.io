@@ -26,7 +26,7 @@ toc_sticky: true
     - data : 정보를 담고 있음
     - pointer : 다음 list 요소를 가리킴. (link)
   - 크기 제한이 없음.
-  ![](/assets/images/notion/[ds]-pointers/img_1.png)
+  ![|487x98](/assets/images/notion/[ds]-pointers/img_1.png)
 
 
 
@@ -34,7 +34,7 @@ toc_sticky: true
   - operator 
     - & : 주소를 나타내는 operator
     - * : 주소가 가리키는 값(value)을 나타내는 operator
-    ![](/assets/images/notion/[ds]-pointers/img_2.png)
+    s
 
 ```c++
 int i; // i에는 정수형 변수 저장

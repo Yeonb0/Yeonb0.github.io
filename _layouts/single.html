@@ -40,7 +40,7 @@ layout: default
         </header>
       {% endunless %}
 
-      <section class="page__content" itemprop="text">
+      <section class="page__content{% if page.collection == 'posts' %} page__content--post{% endif %}" itemprop="text">
         {% if page.toc %}
           <div class="toc-reveal" aria-hidden="true"></div>
           <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
