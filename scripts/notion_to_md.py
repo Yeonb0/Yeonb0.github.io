@@ -68,46 +68,63 @@ def rich_text_to_md(rich_text):
 
 def normalize_markdown(content: str) -> str:
   """
-  - heading(##~######) 위/아래에 빈 줄을 강제
-  - 목록 기호가 코드블록으로 오인될 수 있는 패턴(루트에서 4칸 들여쓴 bullet) 완화
+  - heading 위/아래 공백 보장
+  - 4칸 이상 들여쓴 리스트를 2칸 단위로 정규화
+  - 코드블록 내부는 건드리지 않음
   """
   lines = content.splitlines()
   out = []
 
   heading_re = re.compile(r"^#{1,6}\s+")
-  list_re = re.compile(r"^\s{0,3}(?:[-*+]\s+|\d+[.)]\s+)")
-  deep_bullet_re = re.compile(r"^ {4}([-*+]\s+.*)$")
+  list_re = re.compile(r"^\s*([-*+]\s+|\d+[.)]\s+)")
+  indent_list_re = re.compile(r"^(\s+)([-*+]\s+|\d+[.)]\s+)")
 
-  i = 0
-  while i < len(lines):
-    line = lines[i]
+  in_code_block = False
 
-    # 루트에서 4칸 bullet인데 직전 문맥이 목록이 아니면 2칸으로 완화
-    m = deep_bullet_re.match(line)
-    if m:
-      j = len(out) - 1
-      while j >= 0 and out[j].strip() == "":
-        j -= 1
-      prev = out[j] if j >= 0 else ""
-      if not list_re.match(prev):
-        line = "  " + m.group(1)
+  for line in lines:
 
-    # heading 위/아래 빈 줄 보장
+    # ----------------------------------------
+    # fenced code block 감지
+    # ----------------------------------------
+    if line.strip().startswith("```"):
+      in_code_block = not in_code_block
+      out.append(line)
+      continue
+
+    if in_code_block:
+      out.append(line)
+      continue
+
+    # ----------------------------------------
+    # heading 위/아래 공백 보장
+    # ----------------------------------------
     if heading_re.match(line):
       if out and out[-1].strip() != "":
         out.append("")
       out.append(line)
-
-      if i + 1 < len(lines) and lines[i + 1].strip() != "":
-        out.append("")
-      i += 1
+      out.append("")
       continue
 
-    out.append(line)
-    i += 1
+    # ----------------------------------------
+    # 4칸 이상 들여쓴 리스트 정규화
+    # ----------------------------------------
+    m = indent_list_re.match(line)
+    if m:
+      spaces = len(m.group(1))
+      bullet = m.group(2)
+      rest = line[m.end():]
 
-  normalized = "\n".join(out)
-  return normalized.rstrip() + "\n"
+      # 2칸 단위 depth 계산
+      depth = spaces // 2
+      depth = max(1, depth)   # 최소 depth 1
+
+      indent = "  " * depth
+      line = indent + bullet + rest
+
+    out.append(line)
+
+  return "\n".join(out).rstrip() + "\n"
+
 
 # ==================================================
 # Image
@@ -164,10 +181,18 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     text = rich_text_to_md(block[t]["rich_text"])
     md += text + "\n\n"
   
+  # ==================================================
+  # ✅ heading 처리 (공백 완전 정리 + bold 안전 처리)
+  # ==================================================
   elif t.startswith("heading_"):
     text = rich_text_to_md(block[t]["rich_text"])
 
-    # 리스트 안에 있는 heading이면 → bold bullet로 변환
+    # 🔥 공백 완전 정리
+    text = text.replace("\u00A0", " ")      # non-breaking space 제거
+    text = text.strip()                     # 앞뒤 공백 제거
+    text = re.sub(r"^\s+", "", text)        # 앞쪽 모든 공백 제거
+    text = re.sub(r"\s+$", "", text)        # 뒤쪽 모든 공백 제거
+
     if depth > 0:
       md += indent + "- **" + text + "**\n"
     else:
@@ -224,6 +249,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     has_header = block["table"].get("has_column_header", False)
 
     table_md = []
+
     for i, row in enumerate(rows):
       if row["type"] != "table_row":
         continue
@@ -231,17 +257,23 @@ def block_to_md(block, post_slug, img_idx, depth=0):
       cells = []
       for cell in row["table_row"]["cells"]:
         cell_md = rich_text_to_md(cell).replace("\n", "<br>")
+        cell_md = cell_md.strip()
         cells.append(cell_md)
 
+      # 🔥 항상 왼쪽 정렬 + 들여쓰기 제거
       table_md.append("| " + " | ".join(cells) + " |")
 
-      # header separator
+      # 🔥 헤더 구분선 → |:--| 형태로 생성
       if i == 0 and has_header:
-        sep = "| " + " | ".join(["---"] * len(cells)) + " |"
+        col_count = len(cells)
+        sep = "|" + "|".join([":--"] * col_count) + "|"
         table_md.append(sep)
 
-    md += "\n".join(table_md) + "\n\n"
-    return md, img_idx  # ⚠️ table은 여기서 종료
+    # 🔥 표는 항상 왼쪽에 붙여 출력
+    md += "\n" + "\n".join(table_md) + "\n\n"
+
+    return md, img_idx
+  # ==================================================
 
   # children (재귀)
   if block.get("has_children") and t not in ("callout", "table"):
