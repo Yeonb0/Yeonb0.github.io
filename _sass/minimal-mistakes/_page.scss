@@ -129,6 +129,15 @@ body {
     font-size: 1em;
   }
 
+  img {
+    display: block;
+    width: 70%;
+    max-width: 100%;
+    height: auto;
+    margin: 1rem auto;
+    clear: both;
+  }
+
   /* paragraph indents */
   p {
     margin: 0 0 $indent-var;
