@@ -107,6 +107,7 @@ void equivalence() {
 ### [Program 4.25] Print Equivalence
 
 - Declaration
+
 ```c
 #include <stdio.h>
 #include <alloc.h>

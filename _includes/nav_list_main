@@ -38,6 +38,12 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Programming-Language" %}
+                        <li><i class="fa-solid fa-code" style="color: $toc-color;"></i><a href="/categories/programming-language" class="">Programming Language ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
         <span class="nav__sub-title">Basic Coding</span>
             <ul>
                 {% for category in site.categories %}
@@ -63,8 +69,8 @@
             </ul>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "Computer-Organization" %}
-                        <li><i class="fa-solid fa-desktop" style="color: $toc-color;"></i><a href="/categories/computer-organization" class="">Computer Organization ({{category[1].size}})</a></li>
+                    {% if category[0] == "Computer-System" %}
+                        <li><i class="fa-solid fa-desktop" style="color: $toc-color;"></i><a href="/categories/computer-system" class="">Computer System ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -72,6 +78,29 @@
                 {% for category in site.categories %}
                     {% if category[0] == "Network" %}
                         <li><i class="fa-solid fa-globe" style="color: $toc-color;"></i><a href="/categories/network" class="">Network ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        <span class="nav__sub-title">Computer Architecture</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Computer-Architecture" %}
+                        <li><i class="fa-solid fa-microchip" style="color: $toc-color;"></i><a href="/categories/computer-architecture" class="">Computer Architecture ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        <span class="nav__sub-title">Computer Application</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Computer-Graphics" %}
+                        <li><i class="fa-solid fa-cube" style="color: $toc-color;"></i><a href="/categories/computer-graphics">Graphics ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Machine-Learning" %}
+                    <li><i class="fa-solid fa-brain" style="color: $toc-color;"></i><a href="/categories/machine-learning">Machine Learning ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
