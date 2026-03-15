@@ -111,3 +111,17 @@
 .equation-box mjx-container {
   margin: 0.5rem 0 !important;
 }
+
+/* ----- Post image sizing ----- */
+.page__content img {
+  display: block;
+  width: auto;
+  max-width: min(100%, 720px);
+  height: auto;
+  margin: 1.25rem auto;
+}
+
+/* Optional: use this class for images that should stay full-width */
+.page__content img.full-width {
+  max-width: 100%;
+}
