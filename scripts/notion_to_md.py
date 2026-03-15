@@ -215,11 +215,22 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   elif t == "numbered_list_item":
     md += indent + "1. " + rich_text_to_md(block[t]["rich_text"]) + "\n"
 
-  elif t == "code":
+  elif t == "code": 
     code_text = "".join(rt["plain_text"] for rt in block[t]["rich_text"])
+    lang = block[t]["language"]
+
+    lang_map = {
+      "plain text": "text",
+      "plaintext": "text",
+      "c++": "cpp",
+      "c#": "csharp",
+      "objective-c": "objc"
+    }
+
+    lang = lang_map.get(lang, lang)
 
     md += "{% raw %}\n"
-    md += f"```{block[t]['language']}\n"
+    md += f"```{lang}\n"
     md += code_text.rstrip()
     md += "\n```\n"
     md += "{% endraw %}\n\n"
