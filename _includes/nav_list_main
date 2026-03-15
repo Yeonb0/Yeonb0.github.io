@@ -48,7 +48,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Data-Structure" %}
-                        <li><i class="fa-solid fa-database" style="color: $toc-color;"></i><a href="/categories/data-structure" class="">DS ({{category[1].size}})</a></li>
+                        <li><i class="fa-solid fa-database" style="color: $toc-color;"></i><a href="/categories/data-structure" class="">Data Structure ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -63,7 +63,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Operation-System" %}
-                        <li><i class="fa-brands fa-windows" style="color: $toc-color;"></i><a href="/categories/operation-system" class="">OS ({{category[1].size}})</a></li>
+                        <li><i class="fa-brands fa-windows" style="color: $toc-color;"></i><a href="/categories/operation-system" class="">Operating System ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
