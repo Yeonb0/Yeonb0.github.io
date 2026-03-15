@@ -94,3 +94,20 @@
   padding: 4px 10px;
   border-radius: 6px;
 }
+
+.equation-box {
+  margin: 1.25rem 0;
+  padding: 1rem 1.2rem;
+  background: rgba(127, 127, 127, 0.08);
+  border-left: 4px solid #7c7c7c;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.equation-box p {
+  margin: 0;
+}
+
+.equation-box mjx-container {
+  margin: 0.5rem 0 !important;
+}

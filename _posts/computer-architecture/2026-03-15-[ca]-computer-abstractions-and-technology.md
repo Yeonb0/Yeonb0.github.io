@@ -109,7 +109,7 @@ swap:
   - 0, 1 로 구성
   - 1줄 당 Assembly language 한 줄에 해당 (32 bit)
 {% raw %}
-```plain text
+```text
 0000000010100001000000000011000
 00000000000110000001100000100001
 10001100011000010000000000000000
@@ -252,7 +252,7 @@ ex) O(m²) < O(n log n)
 
 - Example 
   - 어떤 프로그램을 실행하는데 A 는 10s, B 는 15s 걸림
-→ A 는 B 보다 \frac{15}{10} = 1.5 배 빠름
+→ A 는 B 보다 $\frac{15}{10}$ = 1.5 배 빠름
 
 ### ◆ CPU Clocking
 
@@ -260,10 +260,10 @@ ex) O(m²) < O(n log n)
 ![](/assets/images/notion/[ca]-computer-abstractions-and-technology/img_12.png)
 
 - Clock period : 한 Clock cycle 에 걸리는 시간
-ex) 250ps = 0.25ns = 250 \times 10^{-12}s
+ex) 250ps = 0.25ns = $250 \times 10^{-12}$s
 
 - Clock rate (frequency) : 초당 Clock cycle 횟수
-ex) 4.0 GHz = 4000MHz = 4.0 \times 10^9 Hz
+ex) 4.0 GHz = 4000MHz = $4.0 \times 10^9$ Hz
 
 ### ◆ CPU Time
 
@@ -337,7 +337,7 @@ ex)
 ## ✦ Power
 
 
-- P = P_{dynamic} + P_{static} 
+- P = $P_{dynamic} + P_{static}$ 
   - dynamic power : 어떤 활동하면 늘어나는 power → 조절 대상!
   - static power : 아무런 활동하지 않아도 사용하는 power 
   - tempurature (온도) 와도 관련 있음

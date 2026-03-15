@@ -68,36 +68,44 @@ def rich_text_to_md(rich_text):
 
 def normalize_markdown(content: str) -> str:
   """
-  - heading 위/아래 공백 보장
+  - heading 위 / 아래 공백 보장
   - 4칸 이상 들여쓴 리스트를 2칸 단위로 정규화
-  - 코드블록 내부는 건드리지 않음
+  - 코드블록 / HTML wrapper 내부는 건드리지 않음
   """
   lines = content.splitlines()
   out = []
 
   heading_re = re.compile(r"^#{1,6}\s+")
-  list_re = re.compile(r"^\s*([-*+]\s+|\d+[.)]\s+)")
   indent_list_re = re.compile(r"^(\s+)([-*+]\s+|\d+[.)]\s+)")
 
   in_code_block = False
+  in_html_block = False
 
   for line in lines:
+    stripped = line.strip()
 
-    # ----------------------------------------
     # fenced code block 감지
-    # ----------------------------------------
-    if line.strip().startswith("```"):
+    if stripped.startswith("```"):
       in_code_block = not in_code_block
       out.append(line)
       continue
 
-    if in_code_block:
+    # custom html block 감지
+    if stripped.startswith('<div class="equation-box">'):
+      in_html_block = True
       out.append(line)
       continue
 
-    # ----------------------------------------
-    # heading 위/아래 공백 보장
-    # ----------------------------------------
+    if stripped == "</div>":
+      in_html_block = False
+      out.append(line)
+      continue
+
+    if in_code_block or in_html_block:
+      out.append(line)
+      continue
+
+    # heading 위 / 아래 공백 보장
     if heading_re.match(line):
       if out and out[-1].strip() != "":
         out.append("")
@@ -105,18 +113,15 @@ def normalize_markdown(content: str) -> str:
       out.append("")
       continue
 
-    # ----------------------------------------
     # 4칸 이상 들여쓴 리스트 정규화
-    # ----------------------------------------
     m = indent_list_re.match(line)
     if m:
       spaces = len(m.group(1))
       bullet = m.group(2)
       rest = line[m.end():]
 
-      # 2칸 단위 depth 계산
       depth = spaces // 2
-      depth = max(1, depth)   # 최소 depth 1
+      depth = max(1, depth)
 
       indent = "  " * depth
       line = indent + bullet + rest
@@ -180,18 +185,23 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   if t == "paragraph":
     text = rich_text_to_md(block[t]["rich_text"])
     md += text + "\n\n"
-  
+
+  elif t == "equation":
+    expr = block["equation"]["expression"].strip()
+    md += '<div class="equation-box">\n\n'
+    md += "$$\n" + expr + "\n$$\n\n"
+    md += "</div>\n\n"
+
   # ==================================================
-  # ✅ heading 처리 (공백 완전 정리 + bold 안전 처리)
+  # heading 처리
   # ==================================================
   elif t.startswith("heading_"):
     text = rich_text_to_md(block[t]["rich_text"])
 
-    # 🔥 공백 완전 정리
-    text = text.replace("\u00A0", " ")      # non-breaking space 제거
-    text = text.strip()                     # 앞뒤 공백 제거
-    text = re.sub(r"^\s+", "", text)        # 앞쪽 모든 공백 제거
-    text = re.sub(r"\s+$", "", text)        # 뒤쪽 모든 공백 제거
+    text = text.replace("\u00A0", " ")
+    text = text.strip()
+    text = re.sub(r"^\s+", "", text)
+    text = re.sub(r"\s+$", "", text)
 
     if depth > 0:
       md += indent + "- **" + text + "**\n"
@@ -206,7 +216,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     md += indent + "1. " + rich_text_to_md(block[t]["rich_text"]) + "\n"
 
   elif t == "code":
-    code_text = block[t]["rich_text"][0]["plain_text"]  
+    code_text = "".join(rt["plain_text"] for rt in block[t]["rich_text"])
 
     md += "{% raw %}\n"
     md += f"```{block[t]['language']}\n"
@@ -230,19 +240,22 @@ def block_to_md(block, post_slug, img_idx, depth=0):
     if callout.get("icon") and callout["icon"]["type"] == "emoji":
       icon = callout["icon"]["emoji"] + " "
 
-    text = rich_text_to_md(callout["rich_text"])
-    md += f"> {icon}{text}\n"
+    text = rich_text_to_md(callout["rich_text"]).strip()
 
+    if text:
+      md += f"> {icon}{text}\n\n"
+    elif icon:
+      md += f"> {icon}\n\n"
+
+    # Git blog 렌더링 안정성을 위해
+    # 자식 블록은 blockquote 안에 넣지 않고 바깥으로 평탄화
     if block.get("has_children"):
       for c in get_children(block["id"]):
         child_md, img_idx = block_to_md(c, post_slug, img_idx, depth)
-        for line in child_md.splitlines():
-          if line.strip():
-            md += f"> {line}\n"
-        md += "\n"
+        md += child_md
 
   # =========================
-  # 📊 table → Markdown table
+  # table → Markdown table
   # =========================
   elif t == "table":
     rows = get_children(block["id"])
@@ -260,20 +273,15 @@ def block_to_md(block, post_slug, img_idx, depth=0):
         cell_md = cell_md.strip()
         cells.append(cell_md)
 
-      # 🔥 항상 왼쪽 정렬 + 들여쓰기 제거
       table_md.append("| " + " | ".join(cells) + " |")
 
-      # 🔥 헤더 구분선 → |:--| 형태로 생성
       if i == 0 and has_header:
         col_count = len(cells)
         sep = "|" + "|".join([":--"] * col_count) + "|"
         table_md.append(sep)
 
-    # 🔥 표는 항상 왼쪽에 붙여 출력
     md += "\n" + "\n".join(table_md) + "\n\n"
-
     return md, img_idx
-  # ==================================================
 
   # children (재귀)
   if block.get("has_children") and t not in ("callout", "table"):
