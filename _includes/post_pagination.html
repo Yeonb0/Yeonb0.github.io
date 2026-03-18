@@ -61,26 +61,26 @@
           <div class="pagination__item pagination__item--previous">
             {% if series_prev_post %}
               <a href="{{ series_prev_post.url | relative_url }}" class="pagination--pager" title="{{ series_prev_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span><br>
+                <span class="pagination__label">이전 시리즈</span><br>
                 <small class="pagination__title">{{ series_prev_post.title }}</small>
               </a>
             {% else %}
-              <a href="#" class="pagination--pager disabled">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
-              </a>
+              <div class="pagination--pager pagination--pager-placeholder" aria-hidden="true">
+                <span class="pagination__label">이전 시리즈</span>
+              </div>
             {% endif %}
           </div>
 
           <div class="pagination__item pagination__item--next">
             {% if series_next_post %}
               <a href="{{ series_next_post.url | relative_url }}" class="pagination--pager" title="{{ series_next_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span><br>
+                <span class="pagination__label">다음 시리즈</span><br>
                 <small class="pagination__title">{{ series_next_post.title }}</small>
               </a>
             {% else %}
-              <a href="#" class="pagination--pager disabled">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
-              </a>
+              <div class="pagination--pager pagination--pager-placeholder" aria-hidden="true">
+                <span class="pagination__label">다음 시리즈</span>
+              </div>
             {% endif %}
           </div>
         </nav>
