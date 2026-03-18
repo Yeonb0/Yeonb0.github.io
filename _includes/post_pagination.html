@@ -28,7 +28,7 @@
           <div class="pagination__item pagination__item--previous">
             {% if default_prev_post %}
               <a href="{{ default_prev_post.url | relative_url }}" class="pagination--pager" title="{{ default_prev_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span><br>
                 <small class="pagination__title">{{ default_prev_post.title }}</small>
               </a>
             {% else %}
@@ -41,7 +41,7 @@
           <div class="pagination__item pagination__item--next">
             {% if default_next_post %}
               <a href="{{ default_next_post.url | relative_url }}" class="pagination--pager" title="{{ default_next_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span><br>
                 <small class="pagination__title">{{ default_next_post.title }}</small>
               </a>
             {% else %}
@@ -61,7 +61,7 @@
           <div class="pagination__item pagination__item--previous">
             {% if series_prev_post %}
               <a href="{{ series_prev_post.url | relative_url }}" class="pagination--pager" title="{{ series_prev_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span><br>
                 <small class="pagination__title">{{ series_prev_post.title }}</small>
               </a>
             {% else %}
@@ -74,7 +74,7 @@
           <div class="pagination__item pagination__item--next">
             {% if series_next_post %}
               <a href="{{ series_next_post.url | relative_url }}" class="pagination--pager" title="{{ series_next_post.title | markdownify | strip_html | strip}}">
-                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span><br>
                 <small class="pagination__title">{{ series_next_post.title }}</small>
               </a>
             {% else %}
