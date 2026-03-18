@@ -2,6 +2,8 @@
 main:
   - title: "Categories"
     url: /categories/
+  - title: "Series"
+    url: /series/
   - title: "Tag"
     url: /tags/
   - title: "Search"
