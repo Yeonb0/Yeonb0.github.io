@@ -1,0 +1,33 @@
+{% assign series_posts = site.posts | where_exp: "post", "post.series" %}
+{% assign series_groups = series_posts | group_by: "series" | sort_natural: "name" %}
+
+{% if series_groups.size > 0 %}
+  <div class="series-archive-list">
+    {% for series in series_groups %}
+      {% assign sorted_posts = series.items | sort: "step" %}
+      <details id="{{ series.name | slugify }}" class="series-archive-card">
+        <summary class="series-archive-card__summary">
+          <span class="series-archive-card__title">{{ series.name }}</span>
+          <span class="series-archive-card__meta">{{ sorted_posts.size }} posts</span>
+        </summary>
+
+        <div class="series-archive-card__content">
+          <div class="series-archive-card__content-inner">
+            <ol class="series-archive-card__posts">
+              {% for post in sorted_posts %}
+                <li class="series-archive-card__post">
+                  <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+                  {% if post.step %}
+                    <span class="series-archive-card__step">Step {{ post.step }}</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ol>
+          </div>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>등록된 시리즈가 아직 없습니다.</p>
+{% endif %}
