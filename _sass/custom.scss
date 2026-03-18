@@ -264,21 +264,22 @@
 
 .series-archive-list {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .series-archive-card {
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 
   &__summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem; 
-    padding: 1rem 1.25rem;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
     cursor: pointer;
     list-style: none;
     font-weight: 700;
@@ -290,7 +291,7 @@
     &::after {
       content: "▾";
       flex-shrink: 0;
-      transition: transform 0.2s ease;
+      transition: transform 0.28s ease;
     }
   }
 
@@ -300,18 +301,34 @@
 
   &__title {
     color: inherit;
+    font-size: 1.08rem;
+    line-height: 1.4;
   }
 
   &__meta {
     margin-left: auto;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: #9ca3af;
   }
 
+  &__content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.32s ease;
+  }
+
+  &[open] &__content {
+    grid-template-rows: 1fr;
+  }
+
+  &__content-inner {
+    overflow: hidden;
+  }
+
   &__posts {
     margin: 0;
-    padding: 0 1.25rem 1.25rem 2.5rem;
+    padding: 0 1.4rem 1.4rem 2.7rem;
   }
 
   &__post {
@@ -319,7 +336,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    margin-top: 0.75rem;
+    margin-top: 0.8rem;
 
     a {
       color: inherit;
