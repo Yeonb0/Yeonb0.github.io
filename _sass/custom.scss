@@ -209,6 +209,27 @@
   }
 
   &__label {
+    display: block !important;
+    width: 100%;
+  }
+
+  &__title {
+    display: block !important;
+    width: 100%;
+    margin-top: 0.35rem;
+    font-size: 0.72em;
+    font-weight: 400;
+    line-height: 1.35;
+    color: inherit;
+    opacity: 0.72;
+  }
+
+  a.pagination--pager {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
     display: block;
   }
 
