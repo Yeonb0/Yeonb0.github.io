@@ -55,14 +55,14 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Discrete-Math" %}
-                        <li><i class="fa-solid fa-diagram-project" style="color: $toc-color;"></i><a href="/categories/discrete-math" class="">이산 구조 ({{category[1].size}})</a></li>
+                        <li><i class="fa-solid fa-diagram-project" style="color: $toc-color;"></i><a href="/categories/discrete-math" class="">Discrete Math ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Linear-Algebra" %}
-                        <li><i class="fa-solid fa-square-root-variable" style="color: $toc-color;"></i><a href="/categories/linear-algebra" class="">선형대수학 ({{category[1].size}})</a></li>
+                        <li><i class="fa-solid fa-square-root-variable" style="color: $toc-color;"></i><a href="/categories/linear-algebra" class="">Linear Algebra ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -106,7 +106,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Digital-Circuit" %}
-                        <li><i class="fa-solid fa-microchip" style="color: $toc-color;"></i><a href="/categories/digital-circuit" class="">디지털회로개론 ({{category[1].size}})</a></li>
+                        <li><i class="fa-solid fa-microchip" style="color: $toc-color;"></i><a href="/categories/digital-circuit" class="">Digital Circuit ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
