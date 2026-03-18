@@ -1,14 +1,90 @@
-{% if page.previous or page.next %}
-  <nav class="pagination">
-    {% if page.previous %}
-      <a href="{{ page.previous.url | relative_url }}" class="pagination--pager" title="{{ page.previous.title | markdownify | strip_html | strip}}">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</a>
-    {% else %}
-      <a href="#" class="pagination--pager disabled">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</a>
+{% assign default_prev_post = page.previous %}
+{% assign default_next_post = page.next %}
+{% assign series_prev_post = nil %}
+{% assign series_next_post = nil %}
+
+{% if page.series %}
+  {% assign series_posts = site.posts | where: "series", page.series | sort: "step" %}
+  {% for post in series_posts %}
+    {% if post.url == page.url %}
+      {% assign current_index = forloop.index0 %}
+      {% assign prev_index = current_index | minus: 1 %}
+      {% assign next_index = current_index | plus: 1 %}
+      {% if prev_index >= 0 %}
+        {% assign series_prev_post = series_posts[prev_index] %}
+      {% endif %}
+      {% assign series_next_post = series_posts[next_index] %}
+      {% break %}
     {% endif %}
-    {% if page.next %}
-      <a href="{{ page.next.url | relative_url }}" class="pagination--pager" title="{{ page.next.title | markdownify | strip_html | strip}}">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</a>
-    {% else %}
-      <a href="#" class="pagination--pager disabled">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</a>
+  {% endfor %}
+{% endif %}
+
+{% if default_prev_post or default_next_post or series_prev_post or series_next_post %}
+  <div class="post-pagination-group">
+    {% if default_prev_post or default_next_post %}
+      <div class="post-pagination-section">
+        <p class="post-pagination-section__title">글 이동</p>
+        <nav class="pagination">
+          <div class="pagination__item pagination__item--previous">
+            {% if default_prev_post %}
+              <a href="{{ default_prev_post.url | relative_url }}" class="pagination--pager" title="{{ default_prev_post.title | markdownify | strip_html | strip}}">
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+                <small class="pagination__title">{{ default_prev_post.title }}</small>
+              </a>
+            {% else %}
+              <a href="#" class="pagination--pager disabled">
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+              </a>
+            {% endif %}
+          </div>
+
+          <div class="pagination__item pagination__item--next">
+            {% if default_next_post %}
+              <a href="{{ default_next_post.url | relative_url }}" class="pagination--pager" title="{{ default_next_post.title | markdownify | strip_html | strip}}">
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+                <small class="pagination__title">{{ default_next_post.title }}</small>
+              </a>
+            {% else %}
+              <a href="#" class="pagination--pager disabled">
+                <span class="pagination__label">{{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+              </a>
+            {% endif %}
+          </div>
+        </nav>
+      </div>
     {% endif %}
-  </nav>
+
+    {% if page.series and (series_prev_post or series_next_post) %}
+      <div class="post-pagination-section">
+        <p class="post-pagination-section__title">시리즈 이동</p>
+        <nav class="pagination pagination--series">
+          <div class="pagination__item pagination__item--previous">
+            {% if series_prev_post %}
+              <a href="{{ series_prev_post.url | relative_url }}" class="pagination--pager" title="{{ series_prev_post.title | markdownify | strip_html | strip}}">
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+                <small class="pagination__title">{{ series_prev_post.title }}</small>
+              </a>
+            {% else %}
+              <a href="#" class="pagination--pager disabled">
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_previous | default: "Previous" }}</span>
+              </a>
+            {% endif %}
+          </div>
+
+          <div class="pagination__item pagination__item--next">
+            {% if series_next_post %}
+              <a href="{{ series_next_post.url | relative_url }}" class="pagination--pager" title="{{ series_next_post.title | markdownify | strip_html | strip}}">
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+                <small class="pagination__title">{{ series_next_post.title }}</small>
+              </a>
+            {% else %}
+              <a href="#" class="pagination--pager disabled">
+                <span class="pagination__label">시리즈 {{ site.data.ui-text[site.locale].pagination_next | default: "Next" }}</span>
+              </a>
+            {% endif %}
+          </div>
+        </nav>
+      </div>
+    {% endif %}
+  </div>
 {% endif %}
