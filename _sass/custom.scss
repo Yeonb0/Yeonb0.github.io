@@ -125,3 +125,59 @@
 .page__content img.full-width {
   max-width: 100%;
 }
+
+/* ===============================
+   Velog-style Series Box
+   =============================== */
+.series-box {
+  background-color: rgba(0, 0, 0, 0.03); 
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  /* 다크 테마 호환성 */
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .series-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: inherit;
+    
+    i {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .series-list {
+    margin: 0;
+    padding-left: 1.2rem;
+
+    li {
+      margin-bottom: 0.4rem;
+      color: gray;
+
+      &.current-post {
+        font-weight: bold;
+        color: inherit;
+        text-decoration: underline;
+        text-underline-position: under;
+      }
+
+      a {
+        color: gray;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+
+        &:hover {
+          color: inherit;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

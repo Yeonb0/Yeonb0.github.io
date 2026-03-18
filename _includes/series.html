@@ -1,0 +1,19 @@
+{% if page.series %}
+  {% assign series_posts = site.posts | where: "series", page.series | sort: "step" %}
+  <div class="series-box">
+    <div class="series-title">
+      <i class="fas fa-book"></i> '{{ page.series }}' 시리즈
+    </div>
+    <ol class="series-list">
+      {% for post in series_posts %}
+        <li {% if page.url == post.url %}class="current-post"{% endif %}>
+          {% if page.url == post.url %}
+            {{ post.title }}
+          {% else %}
+            <a href="{{ post.url }}">{{ post.title }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+{% endif %}

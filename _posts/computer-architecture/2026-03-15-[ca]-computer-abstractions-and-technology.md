@@ -6,6 +6,8 @@ tags:
 - 성능
 - 전력
 title: '[CA] Computer Abstractions and Technology'
+series: '컴퓨터 아키텍쳐'
+step: 1
 toc: true
 toc_sticky: true
 ---
