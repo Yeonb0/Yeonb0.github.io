@@ -36,3 +36,4 @@ _site
 
 # Obsidian 
 /.obsidian
+.fake

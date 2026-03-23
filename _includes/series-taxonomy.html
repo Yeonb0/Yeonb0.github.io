@@ -15,9 +15,6 @@
           {% for post in sorted_posts %}
             <li class="series-archive-card__post">
               <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-              {% if post.step %}
-                <span class="series-archive-card__step"> {{ post.step }})</span>
-              {% endif %}
             </li>
           {% endfor %}
         </ol>

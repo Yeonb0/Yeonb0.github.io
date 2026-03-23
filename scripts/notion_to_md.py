@@ -329,10 +329,25 @@ def process_page(page):
   if not status or status == "완료":
     return
 
+  # [기존 데이터 추출]
   title = props["이름"]["title"][0]["plain_text"]
   date = props["작성일"]["date"]["start"]
   category = props["카테고리"]["select"]["name"]
   tags = [t["name"] for t in props["태그"]["multi_select"]]
+
+  # ==================================================
+  # 1. 추가 속성 추출 (Series, Step)
+  # ==================================================
+  # series가 'select' 타입일 경우
+  series = ""
+  if "series" in props and props["series"].get("select"):
+    series = props["series"]["select"]["name"]
+  
+  # step이 'number' 타입일 경우
+  step = 0
+  if "step" in props and props["step"].get("number") is not None:
+    step = props["step"]["number"]
+  # ==================================================
 
   post_slug = slugify(title)
   cat_slug = slugify(category)
@@ -341,13 +356,19 @@ def process_page(page):
   filename = f"{date[:10]}-{post_slug}.md"
   path = os.path.join(POSTS_DIR, cat_slug, filename)
 
+  # ==================================================
+  # 2. Front Matter에 반영 (layout, series, step 추가)
+  # ==================================================
   front = {
     "title": title,
     "date": date,
     "categories": [category],
     "tags": tags,
     "toc": True,
-    "toc_sticky": True
+    "toc_sticky": True,
+    "series": series,   # 추가
+    "step": step,       # 추가
+    "layout": "single" 
   }
 
   content = "---\n" + yaml.dump(front, allow_unicode=True) + "---\n\n"
