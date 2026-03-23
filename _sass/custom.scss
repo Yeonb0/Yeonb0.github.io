@@ -279,6 +279,7 @@
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   transition: background-color 0.26s ease, border-color 0.26s ease, transform 0.26s ease;
+  gap: 1.5rem;
 
   &:hover {
     background: $h3-background-color;
