@@ -25,6 +25,8 @@ DEFAULT_CONFIG = {
   "status_done": "완료",
   "posts_dir": "_posts",
   "image_dir": "assets/images/notion",
+  # 태그 속성이 비어 있을 때 태그로 쓸 관계형 속성 이름 (예 : 과목)
+  "tags_from_relation": None,
 }
 
 
@@ -34,7 +36,7 @@ def load_config():
     with open(CONFIG_PATH, encoding="utf-8") as f:
       User = yaml.safe_load(f) or {}
     Config["properties"].update(User.get("properties") or {})
-    for key in ("status_done", "posts_dir", "image_dir"):
+    for key in ("status_done", "posts_dir", "image_dir", "tags_from_relation"):
       if User.get(key):
         Config[key] = User[key]
   return Config
@@ -430,6 +432,21 @@ def get_title(props):
   return ""
 
 
+def get_relation_titles(props, prop_name):
+  # 관계형 속성이 가리키는 페이지들의 제목 목록
+  prop = props.get(prop_name)
+  if not prop or prop.get("type") != "relation":
+    return []
+  Titles = []
+  for rel in prop["relation"]:
+    try:
+      rel_page = notion.pages.retrieve(page_id=rel["id"])
+      Titles.append(get_title(rel_page["properties"]))
+    except Exception as e:
+      print(f"[WARN] 관계 페이지를 읽지 못함 {rel['id']} : {e}")
+  return [t for t in Titles if t]
+
+
 def get_select(props, key, default=""):
   prop = props.get(PROPS[key])
   if prop and prop.get("type") == "select" and prop.get("select"):
@@ -459,6 +476,9 @@ def process_page(page, force=False):
   category = get_select(props, "category", "Notion")
   tags_prop = props.get(PROPS["tags"])
   tags = [t["name"] for t in tags_prop["multi_select"]] if tags_prop else []
+  # 태그가 비어 있으면 관계형 속성 (예 : 과목 → AI/ML) 의 페이지 제목을 태그로 사용
+  if not tags and CONFIG["tags_from_relation"]:
+    tags = get_relation_titles(props, CONFIG["tags_from_relation"])
 
   # ==================================================
   # 1. 추가 속성 추출 (Series, Step)

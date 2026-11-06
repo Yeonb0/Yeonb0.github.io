@@ -11,3 +11,5 @@ properties:
 status_done: 완료
 posts_dir: _posts
 image_dir: assets/images/notion
+# 태그 속성이 비어 있으면 이 관계형 속성이 가리키는 페이지 제목을 태그로 사용
+tags_from_relation: 과목
