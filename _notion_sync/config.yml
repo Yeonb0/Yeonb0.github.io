@@ -1,0 +1,13 @@
+# notion_to_md.py 가 읽는 Notion 속성 이름 매핑
+# Notion DB 속성 이름을 바꾸면 여기만 고치면 됨
+properties:
+  title: 이름
+  date: 작성일
+  category: 카테고리
+  tags: 태그
+  series: series
+  step: step
+  status: 상태
+status_done: 완료
+posts_dir: _posts
+image_dir: assets/images/notion

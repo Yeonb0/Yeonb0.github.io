@@ -1,3 +1,5 @@
+import argparse
+import glob
 import os
 import re
 import requests
@@ -5,13 +7,51 @@ import yaml
 from notion_client import Client
 
 # ==================================================
+# Config
+# ==================================================
+CONFIG_PATH = "_notion_sync/config.yml"
+
+# _notion_sync/config.yml 이 없을 때 쓰는 기본값 (기존 하드코딩 값과 동일)
+DEFAULT_CONFIG = {
+  "properties": {
+    "title": "이름",
+    "date": "작성일",
+    "category": "카테고리",
+    "tags": "태그",
+    "series": "series",
+    "step": "step",
+    "status": "상태",
+  },
+  "status_done": "완료",
+  "posts_dir": "_posts",
+  "image_dir": "assets/images/notion",
+}
+
+
+def load_config():
+  Config = {**DEFAULT_CONFIG, "properties": dict(DEFAULT_CONFIG["properties"])}
+  if os.path.exists(CONFIG_PATH):
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+      User = yaml.safe_load(f) or {}
+    Config["properties"].update(User.get("properties") or {})
+    for key in ("status_done", "posts_dir", "image_dir"):
+      if User.get(key):
+        Config[key] = User[key]
+  return Config
+
+
+CONFIG = load_config()
+PROPS = CONFIG["properties"]
+
+# ==================================================
 # ENV
 # ==================================================
 NOTION_TOKEN = os.environ["NOTION_TOKEN"]
-DATABASE_ID = os.environ["NOTION_DB_ID"]
+# DB 모드에서만 필요
+DATABASE_ID = os.environ.get("NOTION_DB_ID")
 
-POSTS_DIR = "_posts"
-IMAGE_BASE_DIR = "assets/images/notion"
+POSTS_DIR = CONFIG["posts_dir"]
+IMAGE_BASE_DIR = CONFIG["image_dir"]
 
 os.makedirs(POSTS_DIR, exist_ok=True)
 os.makedirs(IMAGE_BASE_DIR, exist_ok=True)
@@ -22,12 +62,40 @@ notion = Client(auth=NOTION_TOKEN)
 # Utils
 # ==================================================
 def slugify(text: str) -> str:
-  return (
+  # 기존 규칙 (소문자, 공백 · 슬래시 → 하이픈) 에 URL을 깨는 문자 제거만 추가
+  slug = (
     text.strip()
     .lower()
     .replace(" ", "-")
     .replace("/", "-")
   )
+  slug = re.sub(r"[?#%:\"'<>|\\*]", "", slug)
+  return re.sub(r"-{2,}", "-", slug).strip("-")
+
+
+def normalize_id(raw: str) -> str:
+  return raw.replace("-", "").lower()
+
+
+def page_id_from_url(url: str) -> str:
+  # notion.so/<slug>-<32hex>?v=... 형식에서 마지막 32자리 hex 추출
+  path = url.split("?")[0].split("#")[0]
+  Matches = re.findall(r"[0-9a-fA-F]{32}|[0-9a-fA-F-]{36}", path)
+  if not Matches:
+    raise ValueError(f"Notion page id를 찾을 수 없습니다 : {url}")
+  return normalize_id(Matches[-1])
+
+
+def find_post_by_notion_id(page_id: str):
+  # R14 : 같은 notion_id 를 가진 기존 글이 있으면 그 경로를 재사용
+  target = normalize_id(page_id)
+  for path in glob.glob(os.path.join(POSTS_DIR, "**", "*.md"), recursive=True):
+    with open(path, encoding="utf-8") as f:
+      head = f.read(4000)
+    m = re.search(r"^notion_id:\s*['\"]?([0-9a-fA-F-]+)", head, re.MULTILINE)
+    if m and normalize_id(m.group(1)) == target:
+      return path
+  return None
 
 # --------------------------------------------------
 # rich_text → Markdown
@@ -46,6 +114,11 @@ def rich_text_to_md(rich_text):
 
   md = ""
   for t in rich_text:
+    # 인라인 수식은 서식 없이 $...$ 로 감싸서 MathJax가 처리하게 함
+    if t.get("type") == "equation":
+      md += "$" + t["equation"]["expression"].strip() + "$"
+      continue
+
     txt = t["plain_text"]
     ann = t["annotations"]
 
@@ -198,7 +271,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   elif t.startswith("heading_"):
     text = rich_text_to_md(block[t]["rich_text"])
 
-    text = text.replace("\u00A0", " ")
+    text = text.replace(chr(0xA0), " ")  # NBSP
     text = text.strip()
     text = re.sub(r"^\s+", "", text)
     text = re.sub(r"\s+$", "", text)
@@ -244,6 +317,30 @@ def block_to_md(block, post_slug, img_idx, depth=0):
         img_idx += 1
     else:
       md += f"![]({img['external']['url']})\n\n"
+
+  elif t == "quote":
+    text = rich_text_to_md(block[t]["rich_text"]).strip()
+    for line in text.split("\n"):
+      md += indent + "> " + line + "\n"
+    md += "\n"
+
+  elif t == "divider":
+    md += "---\n\n"
+
+  elif t == "to_do":
+    mark = "x" if block[t].get("checked") else " "
+    md += indent + f"- [{mark}] " + rich_text_to_md(block[t]["rich_text"]) + "\n"
+
+  elif t == "toggle":
+    # 토글 제목은 굵게, 내용은 아래 children 재귀로 이어서 출력
+    md += indent + "- **" + rich_text_to_md(block[t]["rich_text"]).strip() + "**\n"
+
+  elif t in ("bookmark", "link_preview", "embed"):
+    url = block[t].get("url", "")
+    caption = rich_text_to_md(block[t].get("caption", [])).strip()
+    if url:
+      # 앞의 리스트에 붙어 들어가지 않도록 빈 줄로 시작
+      md += f"\n[{caption or url}]({url})\n\n"
 
   elif t == "callout":
     callout = block["callout"]
@@ -309,52 +406,84 @@ def update_status_done(page_id, status_prop):
   key = "select" if status_prop["type"] == "select" else "status"
   notion.pages.update(
     page_id=page_id,
-    properties={"상태": {key: {"name": "완료"}}}
+    properties={PROPS["status"]: {key: {"name": CONFIG["status_done"]}}}
   )
+
+# ==================================================
+# Property helpers
+# ==================================================
+def get_status(props):
+  status_prop = props.get(PROPS["status"])
+  if not status_prop:
+    return None, None
+  if status_prop["type"] == "select" and status_prop["select"]:
+    return status_prop["select"]["name"], status_prop
+  if status_prop["type"] == "status" and status_prop["status"]:
+    return status_prop["status"]["name"], status_prop
+  return None, status_prop
+
+
+def get_title(props):
+  for prop in props.values():
+    if prop.get("type") == "title":
+      return "".join(t["plain_text"] for t in prop["title"]).strip()
+  return ""
+
+
+def get_select(props, key, default=""):
+  prop = props.get(PROPS[key])
+  if prop and prop.get("type") == "select" and prop.get("select"):
+    return prop["select"]["name"]
+  return default
 
 # ==================================================
 # Page process
 # ==================================================
-def process_page(page):
+def process_page(page, force=False):
+  # force=False : DB 모드 (상태가 완료가 아닌 페이지만)
+  # force=True  : URL 모드 (상태와 관계없이 변환)
   props = page["properties"]
-  status_prop = props.get("상태")
+  status, status_prop = get_status(props)
 
-  status = None
-  if status_prop:
-    if status_prop["type"] == "select" and status_prop["select"]:
-      status = status_prop["select"]["name"]
-    elif status_prop["type"] == "status" and status_prop["status"]:
-      status = status_prop["status"]["name"]
-
-  if not status or status == "완료":
+  if not force and (not status or status == CONFIG["status_done"]):
     return
 
   # [기존 데이터 추출]
-  title = props["이름"]["title"][0]["plain_text"]
-  date = props["작성일"]["date"]["start"]
-  category = props["카테고리"]["select"]["name"]
-  tags = [t["name"] for t in props["태그"]["multi_select"]]
+  title = get_title(props)
+  date_prop = props.get(PROPS["date"])
+  if date_prop and date_prop.get("date"):
+    date = date_prop["date"]["start"]
+  else:
+    # 작성일이 비어 있으면 페이지 생성 시각으로 대체
+    date = page["created_time"]
+  category = get_select(props, "category", "Notion")
+  tags_prop = props.get(PROPS["tags"])
+  tags = [t["name"] for t in tags_prop["multi_select"]] if tags_prop else []
 
   # ==================================================
   # 1. 추가 속성 추출 (Series, Step)
   # ==================================================
   # series가 'select' 타입일 경우
-  series = ""
-  if "series" in props and props["series"].get("select"):
-    series = props["series"]["select"]["name"]
-  
+  series = get_select(props, "series")
+
   # step이 'number' 타입일 경우
   step = 0
-  if "step" in props and props["step"].get("number") is not None:
-    step = props["step"]["number"]
+  step_prop = props.get(PROPS["step"])
+  if step_prop and step_prop.get("number") is not None:
+    step = step_prop["number"]
   # ==================================================
 
   post_slug = slugify(title)
   cat_slug = slugify(category)
 
-  os.makedirs(os.path.join(POSTS_DIR, cat_slug), exist_ok=True)
-  filename = f"{date[:10]}-{post_slug}.md"
-  path = os.path.join(POSTS_DIR, cat_slug, filename)
+  existing = find_post_by_notion_id(page["id"])
+  if existing:
+    # R14 : 기존 파일 이름을 유지해서 URL이 바뀌지 않게 함
+    path = existing
+  else:
+    os.makedirs(os.path.join(POSTS_DIR, cat_slug), exist_ok=True)
+    filename = f"{date[:10]}-{post_slug}.md"
+    path = os.path.join(POSTS_DIR, cat_slug, filename)
 
   # ==================================================
   # 2. Front Matter에 반영 (layout, series, step 추가)
@@ -368,7 +497,8 @@ def process_page(page):
     "toc_sticky": True,
     "series": series,   # 추가
     "step": step,       # 추가
-    "layout": "single" 
+    "layout": "single",
+    "notion_id": normalize_id(page["id"])
   }
 
   content = "---\n" + yaml.dump(front, allow_unicode=True) + "---\n\n"
@@ -383,16 +513,68 @@ def process_page(page):
   with open(path, "w", encoding="utf-8") as f:
     f.write(content)
 
-  update_status_done(page["id"], status_prop)
-  print(f"✔ Uploaded: {cat_slug}/{filename}")
+  if status_prop and status != CONFIG["status_done"]:
+    update_status_done(page["id"], status_prop)
+  action = "Updated" if existing else "Uploaded"
+  print(f"✔ {action}: {path}")
+  return path
+
+# ==================================================
+# Modes
+# ==================================================
+def run_database():
+  if not DATABASE_ID:
+    raise SystemExit("NOTION_DB_ID 가 없습니다 (DB 모드)")
+  cursor = None
+  while True:
+    Kwargs = {"database_id": DATABASE_ID}
+    if cursor:
+      Kwargs["start_cursor"] = cursor
+    res = notion.databases.query(**Kwargs)
+    for p in res["results"]:
+      process_page(p)
+    if not res.get("has_more"):
+      break
+    cursor = res["next_cursor"]
+
+
+def run_page(url):
+  page = notion.pages.retrieve(page_id=page_id_from_url(url))
+  return process_page(page, force=True)
+
+
+def run_queue(queue_dir):
+  # _notion_queue/*.yml 을 처리하고, 성공한 요청 파일은 삭제
+  Failed = []
+  for req_path in sorted(glob.glob(os.path.join(queue_dir, "*.yml"))):
+    with open(req_path, encoding="utf-8") as f:
+      req = yaml.safe_load(f) or {}
+    url = req.get("url", "")
+    try:
+      run_page(url)
+      os.remove(req_path)
+    except Exception as e:
+      print(f"[ERROR] {req_path} ({url}) : {e}")
+      Failed.append(req_path)
+  if Failed:
+    raise SystemExit(f"{len(Failed)}개 요청 실패 : {', '.join(Failed)}")
 
 # ==================================================
 # Main
 # ==================================================
 def main():
-  pages = notion.databases.query(database_id=DATABASE_ID)["results"]
-  for p in pages:
-    process_page(p)
+  parser = argparse.ArgumentParser()
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument("--page", help="Notion 페이지 URL 하나를 변환")
+  group.add_argument("--queue", help="요청 파일 폴더 (예 : _notion_queue)")
+  args = parser.parse_args()
+
+  if args.page:
+    run_page(args.page)
+  elif args.queue:
+    run_queue(args.queue)
+  else:
+    run_database()
 
 if __name__ == "__main__":
   main()
