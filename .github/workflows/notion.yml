@@ -37,3 +37,8 @@ jobs:
           git add .
           git commit -m "Sync Notion lecture notes" || exit 0
           git push
+
+    # notion-queue.yml 과 같은 그룹 : 동시에 push하지 않게 함
+concurrency:
+  group: notion-sync
+  cancel-in-progress: false
