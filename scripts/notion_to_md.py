@@ -271,7 +271,7 @@ def block_to_md(block, post_slug, img_idx, depth=0):
   elif t.startswith("heading_"):
     text = rich_text_to_md(block[t]["rich_text"])
 
-    text = text.replace(" ", " ")
+    text = text.replace(chr(0xA0), " ")  # NBSP
     text = text.strip()
     text = re.sub(r"^\s+", "", text)
     text = re.sub(r"\s+$", "", text)
