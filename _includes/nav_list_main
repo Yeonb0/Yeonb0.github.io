@@ -125,6 +125,14 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+        <span class="nav__sub-title">DevLog</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "Devlog" %}
+                        <li><i class="fa-solid fa-hammer" style="color: $toc-color;"></i><a href="/categories/devlog" class="">DevLog ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         <span class="nav__sub-title">BOJ</span>
             <ul>
                 {% for category in site.categories %}
